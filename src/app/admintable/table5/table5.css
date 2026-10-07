@@ -6,7 +6,8 @@
 
 .table-scroll-wrapper {
     width: 100%;
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 260px);
+    /* leaves headroom for the site's fixed (position:fixed) footer */
     overflow: auto;
     border: 1px solid #4d7c0f;
     background: #fff;
@@ -17,6 +18,7 @@
     min-width: 1200px;
     border-collapse: collapse;
     font-family: "Noto Sans Tamil", sans-serif;
+    font-size: 14px;
 }
 
 .report-table th,
@@ -24,7 +26,7 @@
     border: 1px solid #4d7c0f;
     padding: 6px;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 .top-header th {
@@ -32,55 +34,197 @@
     font-size: 16px;
     position: sticky;
     top: 0;
+    z-index: 100;
 }
 
-.top-sub-header th {
+/* A sticky row's `top` must equal the exact cumulative height of every
+   sticky row above it — Chromium shifts a sticky cell down to match its
+   `top` offset even before any scrolling happens, so a `top` that's even
+   slightly larger than the true preceding height permanently overlaps the
+   row below it (not just once scrolled). The two tables below share these
+   class names but have very different row heights (the Full List header's
+   group-header wraps across multiple lines), so each is scoped by its own
+   table id rather than sharing one guessed offset. */
+
+#abstractTable .top-sub-header th {
     background: #c6efb3;
     text-align: left;
     position: sticky;
-    top: 35px;
+    top: 31px;
+    z-index: 99;
 }
 
-.group-header th {
+#abstractTable .group-header th {
     background: #61b9c0;
     color: #fff;
+    position: sticky;
+    top: 60px;
+    z-index: 98;
 }
 
-.sub-header th {
+#reportTable .top-sub-header th {
+    background: #c6efb3;
+    text-align: left;
+    position: sticky;
+    top: 34px;
+    z-index: 99;
+}
+
+#reportTable .group-header th {
+    background: #61b9c0;
+    color: #fff;
+    position: sticky;
+    top: 66px;
+    z-index: 98;
+}
+
+#reportTable .mid-header th {
+    background: #a7d38f;
+    position: sticky;
+    top: 136px;
+    z-index: 97;
+}
+
+#reportTable .sub-header th {
     background: #9fd38a;
+    position: sticky;
+    top: 168px;
+    z-index: 96;
 }
 
 .text-left {
     text-align: left;
 }
 
-.export-btn {
-    background: #e6f4e6;
-    border: 1px solid #4d7c0f;
-    padding: 6px 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.export-btn:hover {
-    background: #cdeacb;
+.wrap-col {
+    width: 260px;
+    min-width: 220px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .table-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-bottom: 15px;
+}
+
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-section label {
+    font-weight: 600;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-section select {
+    min-width: 200px;
+    padding: 6px 10px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    background: #fff;
 }
 
 .export-btn {
     background: #cdeacb;
-    border: none;
+    border: 1px solid #4d7c0f;
     padding: 10px 18px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
 }
 
 .export-btn:hover {
-    background: #cdeacb;
+    background: #b9ddb6;
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+/* =====================================
+   VIEW TOGGLE / ABSTRACT / GRAND TOTAL
+===================================== */
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.abstract-table {
+    min-width: 900px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 100px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

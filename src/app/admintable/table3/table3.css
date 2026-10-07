@@ -1,19 +1,3 @@
-/* ================= PAGE ================= */
-
-.page-content {
-    position: fixed;
-    top: 90px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
-    background: #f3f4f6;
-}
-
 /* ================= ACTION BAR ================= */
 
 .table-actions {
@@ -90,7 +74,12 @@
 
 .table-scroll-wrapper {
 
-    flex: 1;
+    width: 100%;
+
+    max-height: calc(100vh - 260px);
+    /* leaves headroom for the site's fixed (position:fixed) footer, which
+       doesn't participate in document flow and would otherwise sit on
+       top of a tall scrollable table */
 
     overflow: auto;
 
@@ -104,9 +93,15 @@
 
 .report-table {
 
+    /* width: max-content combined with table-layout: fixed is undefined
+       across browsers — some size the table to min-width, others let it
+       grow to fit content, which made the horizontal scroll range (and
+       so the scrollbar itself) behave inconsistently. min-width alone,
+       matching table1's proven-working pattern, is enough: table-layout:
+       fixed still distributes the fixed 3200px across columns, and any
+       column with its own explicit width (e.g. .wrap-col) still grows
+       the table further via normal fixed-layout rules. */
     min-width: 3200px;
-
-    width: max-content;
 
     border-collapse: collapse;
 
@@ -151,6 +146,14 @@
 
     z-index: 100;
 
+    /* Keep this row single-line — the measured offsets below assume a
+       fixed height for every sticky row above the current one; a title
+       that wraps to 2 lines would push everything after it out of
+       position, letting body rows scroll up through the header bands. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
 }
 
 .top-sub-header th {
@@ -161,9 +164,13 @@
 
     position: sticky;
 
-    top: 42px;
+    top: 38px;
 
     z-index: 99;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
 }
 
@@ -175,7 +182,7 @@
 
     position: sticky;
 
-    top: 82px;
+    top: 74px;
 
     z-index: 98;
 
@@ -187,7 +194,7 @@
 
     position: sticky;
 
-    top: 130px;
+    top: 129px;
 
     z-index: 97;
 
@@ -229,6 +236,18 @@
 
 }
 
+.wrap-col {
+
+    width: 380px;
+
+    min-width: 380px;
+
+    text-align: left;
+
+    word-break: break-word;
+
+}
+
 /* ================= TEXT ================= */
 
 .text-left {
@@ -263,4 +282,92 @@
 
     }
 
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+/* =====================================
+   VIEW TOGGLE / ABSTRACT / GRAND TOTAL
+===================================== */
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.abstract-table {
+    min-width: 1600px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 110px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+}
+
+.vertical-header {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
+    height: 170px;
+    padding: 8px 4px;
+    white-space: nowrap;
 }

@@ -1,6 +1,6 @@
 <div class="page-content">
     <div class="table-actions">
-        <button class="export-btn" (click)="downloadPdf()">
+        <button class="action-btn" (click)="downloadPdf()">
             📄 Download PDF
         </button>
     </div>
@@ -12,204 +12,197 @@
 
                 <!-- TITLE -->
                 <tr class="top-header">
-                    <th colspan="32">
-                        வேட்புமனு திரும்ப பெறுதல் மற்றும் இறுதி போட்டியிடும் வேட்பாளர்கள் பற்றிய முழு விவரங்கள்
+                    <th colspan="39">
+                        வேட்புமனு திரும்பப் பெறுதல் மற்றும் போட்டியிடும் வேட்பாளர் இறுதிப் பட்டியல் பற்றிய எண்ணிக்கை
+                        விவரங்கள்
                     </th>
                 </tr>
 
                 <!-- DEPARTMENT -->
                 <tr class="top-sub-header">
-                    <th colspan="32">
+                    <th colspan="39">
                         துறை -- {{ department_name }}
                     </th>
                 </tr>
 
-                <!-- HEADER LEVEL 1 -->
+                <!-- GROUP HEADER -->
                 <tr class="main-header">
                     <th rowspan="2" class="col-small">வ.எண்</th>
                     <th rowspan="2" class="col-medium">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
                     <th rowspan="2" class="col-medium">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
-                    <th rowspan="2" class="col-wide">சங்கங்கள்</th>
 
-                    <!-- Withdrawal Names -->
-                    <th colspan="3">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி திரும்பப் பெற்ற வேட்புமனுக்களின்
-                        உறுப்பினர்களின் பெயர்</th>
-
-                    <!-- Withdrawal Count -->
-                    <th colspan="4">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி திரும்பப் பெற்ற வேட்புமனுக்களின் எண்ணிக்கை
+                    <th colspan="4">
+                        போட்டியிடும் வேட்பாளர் இறுதி பட்டியலின்படி தேர்தலில் போட்டியிடும் சங்கங்கள் மற்றும் வேட்பாளர்கள்
+                        விபரம்
                     </th>
 
-                    <!-- Final Names -->
-                    <th colspan="3">போட்டியிடும் வேட்பாளர் இறுதி பட்டியலின்படி தேர்தலில் போட்டியிடும் வேட்பாளர்களின்
-                        பெயர்</th>
+                    <th colspan="5">
+                        செல்லத்தக்க வேட்பு மனுக்கள் பட்டியல்படி வேட்பு மனுக்களின் எண்ணிக்கை
+                    </th>
 
-                    <!-- Final Count -->
-                    <th colspan="4">போட்டியிடும் வேட்பாளர் இறுதி பட்டியலின்படி தேர்தலில் போட்டியிடும் வேட்பாளர்களின்
-                        எண்ணிக்கை</th>
+                    <th colspan="5">
+                        செல்லத்தக்க வேட்பு மனுக்கள் பட்டியல்படி வேட்பு மனுவை திரும்பப் பெற்ற வேட்பாளர்களின் எண்ணிக்கை
+                    </th>
 
-                    <!-- Equal Case Names -->
-                    <th colspan="3">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது
-                        நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு சமமாக இருந்து தேர்தலில்
-                        போட்டியில்லாத சங்க உறுப்பினர்களின் பெயர்</th>
+                    <th colspan="5">
+                        போட்டியிடும் இறுதி வேட்பாளர்கள் எண்ணிக்கையும் மற்றும் நிர்வாகக் குழு உறுப்பினர்கள்
+                        எண்ணிக்கையும் சமமாக இருப்பதால் தேர்தலில் போட்டியில்லாத சங்கங்கள் விபரம்
+                    </th>
 
-                    <!-- Equal Case Count -->
-                    <th colspan="4">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது
-                        நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு சமமாக இருந்து தேர்தலில்
-                        போட்டியில்லாத சங்க உறுப்பினர்களின் எண்ணிக்கை</th>
+                    <th colspan="5">
+                        போட்டியிடும் இறுதி வேட்பாளர்கள் எண்ணிக்கை நிர்வாகக் குழு உறுப்பினர்கள் எண்ணிக்கையைவிட
+                        குறைவாக இருப்பதால் தேர்தல் இல்லாத சங்கங்கள் விபரம்
+                    </th>
 
-                    <!-- Less Case Names -->
-                    <th colspan="3">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது
-                        நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு குறைவாக இருந்து
-                        தேர்தலில் போட்டியில்லாத சங்க உறுப்பினர்களின் பெயர்</th>
+                    <th colspan="5">
+                        போட்டியின்றி தேர்ந்தெடுக்கப்பட்டதாக அறிவிக்கப்பட்ட சங்கங்கள் விபரம்
+                    </th>
 
-                    <!-- Less Case Count -->
-                    <th colspan="4">செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது
-                        நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு குறைவாக இருந்து
-                        தேர்தலில் போட்டியில்லாத சங்க உறுப்பினர்களின் எண்ணிக்கை</th>
-                    <!-- <th colspan="3">செல்லத்தக்க வேட்புமனுக்கள் பட்டியலின்படி போட்டியிடக்கூடிய சங்கங்களின் நிர்வாகக் குழு
-                        உறுப்பினர்கள்</th>
-                    <th colspan="4">செல்லத்தக்க வேட்புமனுக்கள் பட்டியலின்படி போட்டியிடக்கூடிய சங்கங்களின் நிர்வாகக் குழு
-                        உறுப்பினர்கள் எண்ணிக்கை</th> -->
+                    <th colspan="5">
+                        இறுதி வேட்பாளர் பட்டியல்படி வாக்குப்பதிவு நடைபெற வேண்டிய சங்கங்கள் விபரம்
+                    </th>
+
+                    <th colspan="2">
+                        தேர்தல் நிறுத்தப்பட்ட சங்கங்கள்
+                    </th>
                 </tr>
 
-                <!-- HEADER LEVEL 2 -->
+                <!-- SUB HEADER -->
                 <tr class="sub-header">
-
-                    <!-- Withdrawal Names -->
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
 
-                    <!-- Withdrawal Count -->
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
                     <th>மொத்தம்</th>
 
-                    <!-- Final Names -->
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-
-                    <!-- Final Count -->
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
                     <th>மொத்தம்</th>
 
-                    <!-- Equal Names -->
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-
-                    <!-- Equal Count -->
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
                     <th>மொத்தம்</th>
 
-                    <!-- Less Names -->
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-
-                    <!-- Less Count -->
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
                     <th>மொத்தம்</th>
 
-                    <!-- <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
-                    <th>மொத்தம்</th> -->
+                    <th>மொத்தம்</th>
 
+                    <th>சங்கங்கள்</th>
+                    <th>ப.இ./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+
+                    <th>சங்கத்தின் பெயர்</th>
+                    <th>காரணம்</th>
+                </tr>
+
+                <!-- COLUMN NUMBER ROW -->
+                <tr class="col-number-row">
+                    <th class="col-number-cell">1</th>
+                    <th class="col-number-cell">2</th>
+                    <th class="col-number-cell">3</th>
+                    <th class="col-number-cell" colspan="4">4</th>
+                    <th class="col-number-cell" colspan="5">5</th>
+                    <th class="col-number-cell" colspan="5">6</th>
+                    <th class="col-number-cell" colspan="5">7</th>
+                    <th class="col-number-cell" colspan="5">8</th>
+                    <th class="col-number-cell" colspan="5">9</th>
+                    <th class="col-number-cell" colspan="5">10</th>
+                    <th class="col-number-cell" colspan="2">11</th>
                 </tr>
 
             </thead>
 
             <tbody>
                 <tr *ngIf="tableRows.length === 0">
-                    <td colspan="13" class="empty-table-message">
+                    <td colspan="39" class="empty-table-message">
                         தயவுசெய்து முதலில் படிவம் 6-ஐ பூர்த்தி செய்யவும்.
                     </td>
                 </tr>
 
                 <tr *ngFor="let r of tableRows; let i = index">
 
-                    <td>{{ i + 1 }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-small">
+                        {{ i + 1 }}
+                    </td>
 
-                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-medium">
                         {{ r.district_name }}
                     </td>
 
-                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-medium">
                         {{ r.zone_name }}
                     </td>
 
-                    <td class="text-left col-wide">
-                        {{ r.society_name }}
-                    </td>
+                    <!-- Final candidate list (names, not counts) -->
+                    <td class="text-left col-name">{{ r.society_name }}</td>
+                    <td class="text-left col-namelist">{{ r.dec_sc_names }}</td>
+                    <td class="text-left col-namelist">{{ r.dec_women_names }}</td>
+                    <td class="text-left col-namelist">{{ r.dec_general_names }}</td>
 
-                    <!-- Withdrawal Names -->
-                    <td>{{ r.w_sc_name }}</td>
-                    <td>{{ r.w_women_name }}</td>
-                    <td>{{ r.w_general_name }}</td>
+                    <!-- Count of the final candidate list above -->
+                    <td class="text-left col-name">{{ r.count_society_name }}</td>
+                    <td class="col-num">{{ r.count_sc }}</td>
+                    <td class="col-num">{{ r.count_women }}</td>
+                    <td class="col-num">{{ r.count_general }}</td>
+                    <td class="col-num">{{ r.count_total }}</td>
 
-                    <!-- Withdrawal Count -->
-                    <td>{{ r.w_sc }}</td>
-                    <td>{{ r.w_women }}</td>
-                    <td>{{ r.w_general }}</td>
-                    <td>{{ r.w_total }}</td>
+                    <!-- Withdrawn -->
+                    <td class="text-left col-name">{{ r.w_society_name }}</td>
+                    <td class="col-num">{{ r.w_sc }}</td>
+                    <td class="col-num">{{ r.w_women }}</td>
+                    <td class="col-num">{{ r.w_general }}</td>
+                    <td class="col-num">{{ r.w_total }}</td>
 
-                    <!-- Final Names -->
-                    <td>{{ r.f_sc_name }}</td>
-                    <td>{{ r.f_women_name }}</td>
-                    <td>{{ r.f_general_name }}</td>
+                    <!-- Unopposed (equal) -->
+                    <td class="text-left col-name">{{ r.eq_society_name }}</td>
+                    <td class="col-num">{{ r.eq_sc }}</td>
+                    <td class="col-num">{{ r.eq_women }}</td>
+                    <td class="col-num">{{ r.eq_general }}</td>
+                    <td class="col-num">{{ r.eq_total }}</td>
 
-                    <!-- Final Count -->
-                    <td>{{ r.f_sc }}</td>
-                    <td>{{ r.f_women }}</td>
-                    <td>{{ r.f_general }}</td>
-                    <td>{{ r.f_total }}</td>
+                    <!-- Unqualified (less) -->
+                    <td class="text-left col-name">{{ r.less_society_name }}</td>
+                    <td class="col-num">{{ r.less_sc }}</td>
+                    <td class="col-num">{{ r.less_women }}</td>
+                    <td class="col-num">{{ r.less_general }}</td>
+                    <td class="col-num">{{ r.less_total }}</td>
 
-                    <!-- Equal Names -->
-                    <td>{{ r.eq_sc_name }}</td>
-                    <td>{{ r.eq_women_name }}</td>
-                    <td>{{ r.eq_general_name }}</td>
+                    <!-- Declared elected unopposed -->
+                    <td class="text-left col-name">{{ r.declared_society_name }}</td>
+                    <td class="col-num">{{ r.declared_sc }}</td>
+                    <td class="col-num">{{ r.declared_women }}</td>
+                    <td class="col-num">{{ r.declared_general }}</td>
+                    <td class="col-num">{{ r.declared_total }}</td>
 
-                    <!-- Equal Count -->
-                    <td>{{ r.eq_sc }}</td>
-                    <td>{{ r.eq_women }}</td>
-                    <td>{{ r.eq_general }}</td>
-                    <td>{{ r.eq_total }}</td>
+                    <!-- Qualified — polling -->
+                    <td class="text-left col-name">{{ r.final_society_name }}</td>
+                    <td class="col-num">{{ r.final_sc }}</td>
+                    <td class="col-num">{{ r.final_women }}</td>
+                    <td class="col-num">{{ r.final_general }}</td>
+                    <td class="col-num">{{ r.final_total }}</td>
 
-                    <!-- Less Names -->
-                    <td>{{ r.less_sc_name }}</td>
-                    <td>{{ r.less_women_name }}</td>
-                    <td>{{ r.less_general_name }}</td>
-
-                    <!-- Less Count -->
-                    <td>{{ r.less_sc }}</td>
-                    <td>{{ r.less_women }}</td>
-                    <td>{{ r.less_general }}</td>
-                    <td>{{ r.less_total }}</td>
-
-                    <!-- F5 Names -->
-                    <!-- <td>{{ r.final_sc_name }}</td>
-                    <td>{{ r.final_women_name }}</td>
-                    <td>{{ r.final_general_name }}</td>
-
-                    <!-- F5 Count -->
-                    <!-- <td>{{ r.final_sc }}</td>
-                    <td>{{ r.final_women }}</td>
-                    <td>{{ r.final_general }}</td>
-                    <td>{{ r.final_total }}</td> -->
-
+                    <!-- Stopped -->
+                    <td class="text-left col-name">{{ r.stopped_society_name }}</td>
+                    <td class="text-left col-reason">{{ r.stop_reason_display }}</td>
 
                 </tr>
 

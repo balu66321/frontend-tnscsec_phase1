@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { UserService } from '../../services/user';
 
 interface TableRow {
-  department_name: string;
   district_name: string;
   zone_name: string;
   society_name: string;
@@ -15,17 +13,21 @@ interface TableRow {
   valid_votes: number;
   invalid_votes: number;
 
-  sc_name: string;
-  women_name: string;
-  general_name: string;
-
-  sc_count: number;
-  women_count: number;
-  general_count: number;
+  // One row per candidate; the society-level cells are filled only on the
+  // society's first row (rowSpan covers the rest).
+  candidate_name: string;
+  category_label: string;
+  votes_obtained: number | string;
   total_count: number;
 
-  remarks: string;
+  rowSpan?: number;
 }
+
+const CATEGORY_LABELS: Record<string, string> = {
+  SC_ST: 'ப.இ./ப.கு',
+  WOMEN: 'பெண்கள்',
+  GENERAL: 'பொது'
+};
 
 @Component({
   selector: 'app-formt8',
@@ -52,67 +54,55 @@ export class Formt8 implements OnInit {
 
       const rows: TableRow[] = [];
 
-      // Loop all form8 records (safe)
       res.data.forEach((form: any) => {
 
-        // const department = form.department?.name || '';
-        // const district = form.district?.name || '';
-        // const zone = form.zone?.name || '';
-        //fjfj
         const department = localStorage.getItem('department_name') || '';
         const district = localStorage.getItem('district_name') || '';
         const zone = localStorage.getItem('zone_name') || '';
 
-        // Set top header department (once)
         this.department_name = department;
 
         form.societies?.forEach((soc: any) => {
 
           const categories = soc.categories || [];
 
-          // ---------- Helpers ----------
-          const getNames = (type: string): string => {
-            const cat = categories.find((c: any) => c.category === type);
-            if (!cat?.winners?.length) return '-';
-            return cat.winners.map((w: any) => w.member_name).join('\n');
-          };
+          const candidates = categories.flatMap((cat: any) =>
+            (cat.candidates || []).map((w: any) => ({
+              name: w.member_name || '-',
+              label: CATEGORY_LABELS[cat.category] || cat.category,
+              votes: w.votes_obtained ?? 0
+            }))
+          );
 
-          const getCount = (type: string): number => {
-            const cat = categories.find((c: any) => c.category === type);
-            return cat?.winners?.length || 0;
-          };
+          const total = candidates.length;
+          const list = candidates.length ? candidates : [{ name: '-', label: '-', votes: '-' }];
 
-          const sc_count = getCount('SC_ST');
-          const women_count = getCount('WOMEN');
-          const general_count = getCount('GENERAL');
+          list.forEach((c: any, index: number) => {
 
-          // ---------- Push Row ----------
-          rows.push({
-            department_name: department,
-            district_name: district,
-            zone_name: zone,
-            society_name: soc.society_name || '-',
+            rows.push({
+              district_name: district,
+              zone_name: zone,
+              society_name: soc.society_name || '-',
 
-            casted_votes: soc.casted_votes_count || 0,
-            ballot_votes: soc.polling_details?.ballot_votes_at_counting || 0,
-            valid_votes: soc.polling_details?.valid_votes || 0,
-            invalid_votes: soc.polling_details?.invalid_votes || 0,
+              casted_votes: soc.casted_votes_count || 0,
+              ballot_votes: soc.polling_details?.ballot_votes_at_counting || 0,
+              valid_votes: soc.polling_details?.valid_votes || 0,
+              invalid_votes: soc.polling_details?.invalid_votes || 0,
 
-            sc_name: getNames('SC_ST'),
-            women_name: getNames('WOMEN'),
-            general_name: getNames('GENERAL'),
+              candidate_name: c.name,
+              category_label: c.label,
+              votes_obtained: c.votes,
+              total_count: total,
 
-            sc_count,
-            women_count,
-            general_count,
-            total_count: sc_count + women_count + general_count,
+              rowSpan: index === 0 ? list.length : undefined
+            });
 
-            remarks: soc.polling_details?.remarks || '-'
           });
 
         });
 
       });
+
 
       this.tableRows = rows;
     });

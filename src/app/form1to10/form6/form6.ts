@@ -34,9 +34,23 @@ export class Form6 implements OnInit {
   selectedSociety: any = null;
   stopRemark = '';
 
+  // Captured once, when the popup opens — whether this society was
+  // UNOPPOSED before any interaction (checkbox grid hidden, no choice to
+  // make). Must NOT be re-derived from the live/simulated election_status,
+  // since checking boxes can simulate the society INTO 'UNOPPOSED' too —
+  // that case must still submit the boxes actually checked, not auto-pick
+  // members[0].
+  wasInitiallyUnopposed = false;
+
   f5List: any[] = [];
   f6List: any[] = [];
   f7List: any[] = [];
+
+  // Societies whose withdrawal was actually submitted (moved out of
+  // f4Societies into f5/f6/f7) — the only ones with a real withdrawn
+  // count. Kept separately so it's not tied to which outcome list a
+  // society lands in.
+  processedSocieties: any[] = [];
 
   showViewPopup = false;
   viewSociety: any = null;
@@ -114,45 +128,49 @@ export class Form6 implements OnInit {
     this.userService.getForm6Preview().subscribe(res => {
       if (!res?.success) return;
 
-      const prepared = res.data.societies.map((s: any) => ({
-        ...s,
+      // const prepared = res.data.societies.map((s: any) => ({
+      const prepared = res.data.societies
+        .filter((s: any) => Number(s.active_counts?.total || 0) > 0)
+        .map((s: any) => ({
+          ...s,
 
-        // Rural Counts
-        rural_sc_st: +s.rural.sc_st,
-        rural_women: +s.rural.women,
-        rural_general: +s.rural.general,
-        rural_total:
-          +s.rural.sc_st +
-          +s.rural.women +
-          +s.rural.general,
+          // Rural Counts
+          rural_sc_st: +s.rural.sc_st,
+          rural_women: +s.rural.women,
+          rural_general: +s.rural.general,
+          rural_total:
+            +s.rural.sc_st +
+            +s.rural.women +
+            +s.rural.general,
 
-        // Declared Counts
-        declared_sc_st: +s.declared.sc_st,
-        declared_women: +s.declared.women,
-        declared_general: +s.declared.general,
-        declared_total:
-          +s.declared.sc_st +
-          +s.declared.women +
-          +s.declared.general,
+          // Declared Counts
+          declared_sc_st: +s.declared.sc_st,
+          declared_women: +s.declared.women,
+          declared_general: +s.declared.general,
+          declared_total:
+            +s.declared.sc_st +
+            +s.declared.women +
+            +s.declared.general,
 
-        // Active Counts (existing)
-        sc_st: +s.active_counts.sc_st,
-        women: +s.active_counts.women,
-        general: +s.active_counts.general,
-        total: +s.active_counts.total,
+          // Active Counts (existing)
+          sc_st: +s.active_counts.sc_st,
+          women: +s.active_counts.women,
+          general: +s.active_counts.general,
+          total: +s.active_counts.total,
 
-        rejectDone: false,
-        stopDone: false,
+          rejectDone: false,
+          stopDone: false,
 
-        members: s.members.map((m: any) => ({
-          ...m,
-          checked: false,
-          withdrawn: false
-        }))
-      }));
+          members: s.members.map((m: any) => ({
+            ...m,
+            checked: false,
+            withdrawn: false
+          }))
+        }));
 
       this.f3Societies = JSON.parse(JSON.stringify(prepared)); // snapshot
       this.f4Societies = prepared; // working list
+      this.processedSocieties = [];
     });
   }
 
@@ -194,6 +212,7 @@ export class Form6 implements OnInit {
       this.selectedSociety = soc;
     }
 
+    this.wasInitiallyUnopposed = this.selectedSociety.election_status === 'UNOPPOSED';
     this.showRejectPopup = true;
   }
   closeReject() {
@@ -251,8 +270,12 @@ export class Form6 implements OnInit {
 
     let membersToWithdraw: any[] = [];
 
-    if (this.selectedSociety.election_status === 'UNOPPOSED') {
+    if (this.wasInitiallyUnopposed) {
 
+      // Only auto-pick members[0] when the society was UNOPPOSED from the
+      // start (no checkboxes were ever offered). If it only became
+      // UNOPPOSED via the live simulation after the officer checked boxes,
+      // those checked members are what must actually be withdrawn.
       membersToWithdraw = [this.selectedSociety.members[0]];
 
     } else {
@@ -330,10 +353,30 @@ export class Form6 implements OnInit {
 
     else {
 
-      let completed = 0;
+      // Send one at a time — firing all of these in parallel meant each
+      // withdrawForm6 response reflected whatever partial state the backend
+      // happened to be in at that moment (a race), so neither "last response
+      // to arrive" nor any single response's election_status could be
+      // trusted as the true final state. Sequencing them removes that.
+      const withdrawNext = (index: number) => {
 
-      membersToWithdraw.forEach((m: any) => {
-        console.log('form6_id =', this.form6_id);
+        if (index >= membersToWithdraw.length) {
+
+          // Mark them withdrawn locally, then derive the final status the
+          // same way the backend does (rural vs. the real active counts) —
+          // instead of trusting any one intermediate API response.
+          membersToWithdraw.forEach((m: any) => (m.withdrawn = true));
+
+          this.updateCounts(this.selectedSociety);
+          this.selectedSociety.election_status = this.computeElectionStatus(this.selectedSociety);
+
+          this.moveSocietyAfterSubmit(this.selectedSociety);
+          this.closeReject();
+
+          return;
+        }
+
+        const m = membersToWithdraw[index];
 
         this.userService.withdrawForm6({
 
@@ -345,22 +388,36 @@ export class Form6 implements OnInit {
 
         }).subscribe(() => {
 
-          completed++;
-
-          if (completed === membersToWithdraw.length) {
-
-            this.moveSocietyAfterSubmit(this.selectedSociety);
-
-            this.closeReject();
-
-          }
+          withdrawNext(index + 1);
 
         });
+      };
 
-      });
+      withdrawNext(0);
 
     }
 
+  }
+
+  /* ================= CLIENT-SIDE ELECTION STATUS ================= */
+  // Mirrors the backend's getElectionStatus(rural, final): all three
+  // categories equal to the required seats -> UNOPPOSED; any category still
+  // above the required seats -> QUALIFIED; otherwise -> UNQUALIFIED.
+  private computeElectionStatus(soc: any): 'UNOPPOSED' | 'QUALIFIED' | 'UNQUALIFIED' {
+
+    const allEqual =
+      soc.rural_sc_st === soc.sc_st &&
+      soc.rural_women === soc.women &&
+      soc.rural_general === soc.general;
+
+    if (allEqual) return 'UNOPPOSED';
+
+    const hasIncrease =
+      soc.sc_st > soc.rural_sc_st ||
+      soc.women > soc.rural_women ||
+      soc.general > soc.rural_general;
+
+    return hasIncrease ? 'QUALIFIED' : 'UNQUALIFIED';
   }
   /* ================= MOVE SOCIETY ================= */
   private moveSocietyAfterSubmit(soc: any) {
@@ -379,11 +436,26 @@ export class Form6 implements OnInit {
     if (soc.election_status === 'UNOPPOSED') this.f5List.push(soc);
     else if (soc.election_status === 'UNQUALIFIED') this.f6List.push(soc);
     else if (soc.election_status === 'QUALIFIED') this.f7List.push(soc);
+
+    this.processedSocieties.push(soc);
   }
 
   /* ================= VIEW ================= */
   openViewPopup(soc: any) {
-    this.viewSociety = { ...soc, candidates: soc.candidates || [] };
+
+    // f5/f6/f7 rows already carry a built `candidates` list (see
+    // moveSocietyAfterSubmit); this table's rows only have `members`,
+    // so derive the same shape from the active (non-withdrawn) ones.
+    const candidates = soc.candidates?.length
+      ? soc.candidates
+      : (soc.members || [])
+        .filter((m: any) => !m.withdrawn)
+        .map((m: any) => ({
+          member_name: m.member_name,
+          category_type: m.category_type
+        }));
+
+    this.viewSociety = { ...soc, candidates };
     this.showViewPopup = true;
   }
 
@@ -418,7 +490,18 @@ export class Form6 implements OnInit {
     });
   }
 
-  //newly added method  
+  /* ================= WITHDRAWN COUNT (CATEGORY-WISE) ================= */
+  getWithdrawnCount(soc: any, type: string): number {
+    return (soc.members || []).filter(
+      (m: any) => m.category_type === type && m.withdrawn
+    ).length;
+  }
+
+  getWithdrawnTotal(soc: any): number {
+    return (soc.members || []).filter((m: any) => m.withdrawn).length;
+  }
+
+  //newly added method
 
   updateCounts(soc: any) {
 

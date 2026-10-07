@@ -31,7 +31,7 @@
 
       <!-- TOP HEADER -->
       <tr class="top-header">
-        <th colspan="13">
+        <th colspan="17">
           மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட விவரம்
         </th>
       </tr>
@@ -39,7 +39,7 @@
 
 
       <tr class="top-sub-header">
-        <th colspan="13">
+        <th colspan="17">
           துறை -- {{ department_name }}
         </th>
       </tr>
@@ -47,35 +47,43 @@
 
       <!-- MAIN HEADER -->
       <tr>
-        <th rowspan="2">வ.எண்</th>
-        <th rowspan="2"><br><br>மாவட்டம்</th>
-        <th rowspan="2"><br>மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
+        <th rowspan="2" class="col-small">வ.எண்</th>
+        <th rowspan="2" class="narrow-col">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+        <th rowspan="2" class="narrow-col">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
         <th rowspan="2">
-          தேர்தல் அறிவிப்பதற்கு<br>
-          திட்டமிடப்பட்ட சங்கங்களின் எண்ணிக்கை
+          மாநில தேர்தல் அலுவலரால் திட்டம் கோரப்பட்ட சங்கங்களின் எண்ணிக்கை
         </th>
 
         <th rowspan="2" class="wrap-col">
-          தேர்தல் ஆணையத்தால் திட்டம் வழங்கப்பட்ட<br>
-          சங்கங்களின் பெயர்
+          மாநில தேர்தல் அலுவலரால் திட்டம் கோரப்பட்ட சங்கங்கள்
+
         </th>
 
         <th rowspan="2" class="wrap-col">
-          தேர்தல் அறிவிப்பு வழங்கப்பட்ட<br>
-          சங்கங்களின் பெயர்
+          மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட சங்கங்களின் பெயர்கள்
+        </th>
+
+        <th rowspan="2">
+          மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட சங்கங்களின் எண்ணிக்கை
         </th>
 
         <th colspan="4">
-          நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை
+          வ.எண் 6-ல் உள்ள சங்கங்களில் தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை
+
         </th>
 
         <th rowspan="2" class="wrap-col">
-          தேர்தல் அறிவிப்பு வழங்கப்படாத<br>
-          சங்கங்களின் பெயர்
+          கலம் 5-6 தேர்தல் அறிவிப்பு வழங்கப்படாத சங்கங்களின் பெயர்கள்
+
+
+
         </th>
 
-        <th rowspan="2">வழங்கப்படாத<br> சங்கங்களின் எண்ணிக்கை</th>
-        <th rowspan="2">குறிப்பு</th>
+        <th rowspan="2">தேர்தல் அறிவிப்பு வழங்கப்படாத சங்கங்களின் எண்ணிக்கை</th>
+
+        <th colspan="4">
+          தேர்தல் அறிவிப்பு வழங்கப்படாததற்கான காரணம்
+        </th>
       </tr>
 
       <tr class="sub-header">
@@ -83,13 +91,33 @@
         <th>மகளிர்</th>
         <th>பொது</th>
         <th>மொத்தம்</th>
+
+        <th class="reason-col">முகவரி தெரியவில்லை</th>
+        <th class="reason-col">செயலிழந்த சங்கங்கள்</th>
+        <th class="reason-col">கலைத்தல் அறிவிப்பு வழங்கப்பட்டவை</th>
+        <th class="reason-col">இதர காரணம்</th>
+      </tr>
+
+      <!-- COLUMN NUMBER ROW -->
+      <tr class="col-number-row">
+        <th class="col-number-cell">1</th>
+        <th class="col-number-cell">2</th>
+        <th class="col-number-cell">3</th>
+        <th class="col-number-cell">4</th>
+        <th class="col-number-cell">5</th>
+        <th class="col-number-cell">6</th>
+        <th class="col-number-cell">7</th>
+        <th class="col-number-cell" colspan="4">8</th>
+        <th class="col-number-cell">9</th>
+        <th class="col-number-cell">10</th>
+        <th class="col-number-cell" colspan="4">11</th>
       </tr>
 
     </thead>
 
     <tbody>
       <tr *ngIf="tableRows.length === 0">
-        <td colspan="13" class="empty-table-message">
+        <td colspan="17" class="empty-table-message">
           தயவுசெய்து முதலில் படிவம் 1-ஐ பூர்த்தி செய்யவும்.
         </td>
       </tr>
@@ -98,17 +126,17 @@
       <tr *ngFor="let r of tableRows; let i = index">
 
         <!-- SERIAL (ONCE) -->
-        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-small">
           {{ i + 1 }}
         </td>
 
         <!-- DISTRICT (ONCE) -->
-        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="narrow-col">
           {{ r.district_name }}
         </td>
 
         <!-- ZONE (ONCE) -->
-        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="narrow-col">
           {{ r.zone_name }}
         </td>
 
@@ -127,26 +155,32 @@
           {{ r.isSelected ? r.society_name : '-' }}
         </td>
 
+        <!-- SELECTED SOCIETY COUNT (ONCE) -->
+        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+          {{ r.selected_count }}
+        </td>
+
         <!-- NUMBERS -->
-        <td>{{ r.sc_st ?? '' }}</td>
-        <td>{{ r.women ?? '' }}</td>
-        <td>{{ r.general ?? '' }}</td>
-        <td class="total-cell">{{ r.tot_voters ?? '' }}</td>
+        <td>{{ r.sc_st ?? '-' }}</td>
+        <td>{{ r.women ?? '-' }}</td>
+        <td>{{ r.general ?? '-' }}</td>
+        <td class="total-cell">{{ r.tot_voters ?? '-' }}</td>
 
         <!-- NON SELECTED SOCIETY -->
         <td class="danger-text wrap-col">
           {{ r.isSelected ? '-' : r.society_name }}
         </td>
 
-        <!-- NON SELECTED COUNT (ONCE) -->
+        <!-- NON SELECTED COUNT (ONCE PER GROUP) -->
         <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
-          {{ r.non_selected_count }}
+          {{ r.group_non_selected_count }}
         </td>
 
-        <!-- REMARK (ONCE) -->
-        <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="note-cell">
-          {{ r.remark }}
-        </td>
+        <!-- REASON TICKS (PER ROW) -->
+        <td>{{ !r.isSelected && r.reason === 'address_unknown' ? '✔' : '-' }}</td>
+        <td>{{ !r.isSelected && r.reason === 'defunct_societies' ? '✔' : '-' }}</td>
+        <td>{{ !r.isSelected && r.reason === 'dissolution_notice_issued' ? '✔' : '-' }}</td>
+        <td>{{ !r.isSelected && r.reason === 'other' ? '✔' : '-' }}</td>
 
       </tr>
 

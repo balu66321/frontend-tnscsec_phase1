@@ -4,13 +4,17 @@
 
     <!-- Username -->
     <label>Username</label>
-    <input type="text" [(ngModel)]="username" placeholder="Enter username">
+    <!-- <input type="text" [(ngModel)]="username" placeholder="Enter username"> -->
+    <input type="text" [(ngModel)]="username" name="username" autocomplete="username" placeholder="Enter username">
 
     <!-- Password -->
     <label>Password</label>
 
     <div class="password-box">
-      <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="Enter password">
+      <!-- <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" placeholder="Enter password"> -->
+
+      <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+        autocomplete="current-password" placeholder="Enter password">
 
       <!-- Eye Button -->
       <!-- <button type="button" class="eye-btn" (click)="showPassword = !showPassword">
@@ -27,6 +31,8 @@
     <!-- <button class="login-btn" (click)="login()">
       Login
     </button> -->
+
+
 
     <button class="login-btn" (click)="login()" [disabled]="loading">
       {{ loading ? 'Logging in...' : 'Login' }}

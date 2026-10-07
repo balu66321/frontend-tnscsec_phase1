@@ -1,110 +1,128 @@
 <div class="forms-container">
-  <table class="forms-table">
+  <div class="forms-inner">
 
-    <tr *ngFor="let f of formsList">
+    <div class="election-programme-bar">
+      <a [routerLink]="['/layout/electionschedule']">
+        தேர்தல் அட்டவணை (Election Schedule)
+      </a>
+      <!-- <a [routerLink]="['/layout/electionprogramme']">
+      தேர்தல் திட்ட அறிவிப்பு (Election Programme)
+    </a> -->
+    </div>
 
-      <td class="title">{{ f.title }}</td>
+    <table class="forms-table">
 
-      <!-- View = TABLE -->
-      <td>
-        <button class="view-btn" [routerLink]="f.tableLink">
-          View
-        </button>
-      </td>
+      <tr *ngFor="let f of formsList">
+
+        <td class="title">{{ f.title }}</td>
+
+        <!-- View = TABLE -->
+        <td>
+          <button class="view-btn" [routerLink]="f.tableLink">
+            View
+          </button>
+        </td>
 
 
-      <!-- Form link -->
-      <td class="link">
+        <!-- Form link -->
+        <td class="link">
 
-        <!-- Form1 ALWAYS clickable -->
-        <a *ngIf="f.code === 'Form1'" [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          <!-- Form1 ALWAYS clickable -->
+          <a *ngIf="f.code === 'Form1'" [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
+          </a>
 
-        <!-- Form2 clickable ONLY after Form1 completed
+          <!-- Form2 clickable ONLY after Form1 completed
         <a *ngIf="f.code === 'Form2' && isForm1Completed()" [routerLink]="f.formLink">
           ({{ f.code }})
         </a> --->
-        <a *ngIf="f.code === 'Form2' " [routerLink]="f.formLink">
+          <a *ngIf="f.code === 'Form2' " [routerLink]="f.formLink">
 
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <!---
+          </a>
+          <!---
          <span
           *ngIf="f.code === 'Form2' && !isForm1Completed()"
           class="disabled-text">
           ({{ f.code }})
         </span> -->
-        <!-- <span *ngIf="f.code === 'Form2' ">
+          <!-- <span *ngIf="f.code === 'Form2' ">
           ({{ f.code }})
         </span> -->
 
-        <!-- 🔥 Form3 clickable ONLY after Form2 completed-->
-        <a *ngIf="f.code === 'Form3' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          <!-- 🔥 Form3 clickable ONLY after Form2 completed-->
+          <a *ngIf="f.code === 'Form3' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
+          </a>
 
-        <a *ngIf="f.code === 'Form4' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          <a *ngIf="f.code === 'Form4' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
+          </a>
 
-        <a *ngIf="f.code === 'Form5a' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          <a *ngIf="f.code === 'Form5' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form5b' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form5b' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form6' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form6' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form7' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form6List' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form8' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form7' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form9' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form8' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
-        <a *ngIf="f.code === 'Form10' " [routerLink]="f.formLink">
-          ({{ f.code }})
-          <span class="arrow">➜</span>
+          </a>
+          <a *ngIf="f.code === 'Form9' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        </a>
+          </a>
+          <a *ngIf="f.code === 'Form10' " [routerLink]="f.formLink">
+            ({{ f.code }})
+            <span class="arrow">➜</span>
 
-        <!-- 🔒 Form3 locked -->
-        <!-- <span
+          </a>
+
+          <!-- 🔒 Form3 locked -->
+          <!-- <span
           *ngIf="f.code === 'Form3' && !isForm2Completed()"
           class="disabled-text">
           ({{ f.code }})
         </span> -->
-        <!-- <span *ngIf="f.code === 'Form3' ">
+          <!-- <span *ngIf="f.code === 'Form3' ">
           ({{ f.code }})
         </span> -->
 
-      </td>
+        </td>
 
-    </tr>
+      </tr>
 
-  </table>
+    </table>
+
+  </div>
 </div>

@@ -28,11 +28,27 @@
    TABLE BASE
 ===================================== */
 .report-table {
-    min-width: 2200px;
+    min-width: 3150px;
     border-collapse: collapse;
     table-layout: fixed;
     font-family: "Noto Sans Tamil", sans-serif;
     font-size: 14px;
+}
+
+/* =====================================
+   FIXED WIDTH FOR NON wrap-col COLUMNS
+   (table-layout:fixed needs an explicit
+   width on every column, or unspecified
+   ones collapse and wrap one letter per line)
+===================================== */
+.narrow-col {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* =====================================
@@ -43,7 +59,7 @@
     border: 1px solid #4d7c0f;
     padding: 8px;
     /* 🔽 reduced */
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 /* =====================================
@@ -99,7 +115,7 @@
     z-index: 28;
 
     white-space: normal;
-    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* =====================================
@@ -112,6 +128,19 @@
     position: sticky;
     top: 116px;
     z-index: 27;
+}
+
+/* =====================================
+   COLUMN NUMBER ROW (under the headers)
+===================================== */
+.report-table thead tr.col-number-row th.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    position: static;
+    padding: 4px 8px;
 }
 
 /* =====================================
@@ -163,7 +192,7 @@
 }
 
 .report-table td {
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 .wrap-col {

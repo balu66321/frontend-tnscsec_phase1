@@ -92,7 +92,7 @@
     border: 1px solid #4d7c0f;
     padding: 6px;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 /* ======================================
@@ -162,4 +162,11 @@
     padding: 0 10px;
     background: #ffffff;
     border-bottom: 1px solid #dcdcdc;
+}
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

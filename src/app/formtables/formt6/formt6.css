@@ -8,7 +8,7 @@
 
 /* Table base */
 .report-table {
-    min-width: 4200px;
+    min-width: 5600px;
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
@@ -90,7 +90,7 @@
     border: 1px solid #4d7c0f;
     padding: 6px;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 /* ======================================
@@ -107,6 +107,36 @@
 .col-wide {
     width: 500px;
     word-break: break-word;
+}
+
+.col-name {
+    width: 280px;
+    min-width: 260px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.col-num {
+    width: 80px;
+    min-width: 70px;
+}
+
+.col-namelist {
+    width: 220px;
+    min-width: 200px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.col-reason {
+    width: 260px;
+    min-width: 240px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.text-left {
+    text-align: left;
 }
 
 /* ======================================
@@ -158,4 +188,11 @@
     padding: 0 10px;
     background: #ffffff;
     border-bottom: 1px solid #dcdcdc;
+}
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

@@ -27,6 +27,15 @@ export class Form4 implements OnInit {
   selectedSocietyList: any[] = [];
   unselectedSocietyList: any[] = [];
 
+  readonly reasonOptions = [
+    { value: 'legal_order', label: 'சட்ட ஒழுங்கு' },
+    { value: 'natural_disaster', label: 'இயற்கை பேரிடர்' },
+    { value: 'court_injunction', label: 'நீதிமன்ற தடையாணை' },
+    { value: 'election_cancelled_by_commission', label: 'ஆணையத்தால் தேர்தல் ரத்து' },
+    { value: 'insufficient_candidates', label: 'சிற்றெண் குறைவு' },
+    { value: 'other', label: 'இதர காரணங்கள்' }
+  ];
+
   constructor(private userService: UserService, private router: Router
   ) { }
 
@@ -100,7 +109,13 @@ export class Form4 implements OnInit {
             declared_women: Number(s.declared_women) || 0,
             declared_general: Number(s.declared_general) || 0,
 
-            remarks: s.remarks || null
+            remarks: s.remarks || null,
+
+            // '' (not null) so it matches the dropdown's placeholder
+            // <option value=""> — otherwise Angular can't match a null
+            // model value to any option and renders the select blank.
+            reason: s.reason || '',
+            otherReasonText: s.other_reason_text || null
           });
 
         }
@@ -154,7 +169,10 @@ export class Form4 implements OnInit {
           declared_women: s.declared_women,
           declared_general: s.declared_general,
 
-          remarks: s.remarks || ''
+          remarks: s.remarks || '',
+
+          reason: s.reason || '',
+          otherReasonText: s.other_reason_text || null
         }));
 
         this.updateLists();
@@ -221,21 +239,10 @@ export class Form4 implements OnInit {
   /* ============== BUILD F4 / F5 ============== */
   updateLists() {
 
-    this.selectedSocietyList = this.societyList
-      .filter(s => s.selected)
-      .map(s => ({
-        society_id: s.society_id,
-        society_name: s.society_name,
-        rural_id: s.rural_id,
-        selected: true,
-
-        declared_sc_st: s.declared_sc_st,
-        declared_women: s.declared_women,
-        declared_general: s.declared_general,
-
-        remarks: s.remarks
-      }));
-
+    // Keep the SAME object references as societyList (not copies) — the
+    // declared-count inputs in the template bind directly to these list
+    // items, so a copy here would silently lose every edit on submit.
+    this.selectedSocietyList = this.societyList.filter(s => s.selected);
     this.unselectedSocietyList = this.societyList.filter(s => !s.selected);
   }
 
@@ -247,6 +254,24 @@ export class Form4 implements OnInit {
       return;
     }
 
+    // Backend expects ONE list covering every society (filed and not-filed
+    // alike), each flagged with `selected` — it splits them server-side.
+    // Reason/other_reason_text only apply to the not-filed (selected:false) ones.
+    const form2_selected_list = this.societyList.map(s => ({
+      society_id: s.society_id,
+      society_name: s.society_name,
+      rural_id: s.rural_id,
+      selected: s.selected,
+
+      declared_sc_st: s.declared_sc_st,
+      declared_women: s.declared_women,
+      declared_general: s.declared_general,
+
+      remarks: s.remarks,
+      reason: s.selected ? null : (s.reason || null),
+      other_reason_text: (!s.selected && s.reason === 'other') ? (s.otherReasonText || '') : null
+    }));
+
     const payload = {
       department_id: this.department_id,
       district_id: this.district_id,
@@ -254,7 +279,7 @@ export class Form4 implements OnInit {
       zone_id: this.zone_id,
       zone_name: this.zone_name,
 
-      form2_selected_list: this.selectedSocietyList
+      form2_selected_list
     };
     console.log('Submit Payload:', payload);
     /* ===== EDIT MODE ===== */

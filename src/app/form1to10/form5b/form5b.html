@@ -48,11 +48,18 @@
             <button class="close-btn" (click)="closeStop()">×</button>
         </div>
 
-        <textarea [(ngModel)]="stopRemark" placeholder="தேர்தல் நிறுத்தக் குறிப்பு"></textarea>
+        <select class="reason-dropdown" [(ngModel)]="stopReason" name="stopReason">
+            <option value="" disabled selected hidden>காரணம் தேர்வு செய்யவும்</option>
+            <option *ngFor="let r of reasonOptions" [value]="r.value">{{ r.label }}</option>
+        </select>
+
+        <textarea *ngIf="stopReason === 'other'" class="other-reason-box" [(ngModel)]="stopOtherReasonText"
+            name="stopOtherReasonText" maxlength="555"
+            placeholder="காரணத்தை உள்ளிடவும் (அதிகபட்சம் 555 எழுத்துகள்)"></textarea>
 
         <div class="modal-footer">
             <button class="btn-grey" (click)="closeStop()">ரத்து செய்</button>
-            <button class="btn-red" (click)="submitStop()">சமர்ப்பிக்கbgggu</button>
+            <button class="btn-red" (click)="submitStop()">சமர்ப்பிக்க</button>
         </div>
 
     </div>
@@ -84,7 +91,7 @@
 
     <!-- ================= F3 ================= -->
     <label class="section-label">
-        வேட்புமனு பரிசீலனையில் தகுதி பெற்ற சங்கங்கள்
+        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
     </label>
 
     <div class="table-box">
@@ -114,8 +121,7 @@
 
     <!-- ================= F4 ================= -->
     <label class="section-label">
-        வேட்புமனு பரிசீலனையின் போது தள்ளுபடி / நிறுத்தல்
-    </label>
+        வேட்புமனு பரிசீலனையின் போது தள்ளுபடி செய்யப்பட்ட வேட்பு மனுக்கள் </label>
 
     <div class="table-box">
         <table>
@@ -128,7 +134,7 @@
                     <th>பொது</th>
                     <th>மொத்தம்</th>
                     <th>நீக்கம்</th>
-                    <th>தேர்தலை நிறுத்த</th>
+                    <th>தேர்தல் நிறுத்தப்பட்ட சங்கம்</th>
                 </tr>
             </thead>
 
@@ -153,7 +159,7 @@
                     </td>
 
                     <td>
-                        <button class="btn-red" (click)="openStopPopup(s)" [class.disabled]="s.stopDone">
+                        <button class="btn-red" (click)="openStopPopup(s)" [disabled]="s.stopDone">
 
                             {{ s.stopDone ? 'தேர்தல் நிறுத்தப்பட்டது' : 'தேர்தலை நிறுத்த' }}
                         </button>
@@ -201,23 +207,6 @@
             </div>
         </div>
     </div> -->
-
-    <!-- ================= STOP POPUP ================= -->
-    <div class="modal-backdrop" *ngIf="showStopPopup">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>தேர்தலை நிறுத்த</h3>
-                <button class="close-btn" (click)="closeStop()">×</button>
-            </div>
-
-            <textarea [(ngModel)]="stopRemark" placeholder="தேர்தல் நிறுத்தக் குறிப்பு"></textarea>
-
-            <div class="modal-footer">
-                <button class="btn-grey" (click)="closeStop()">ரத்து செய்</button>
-                <button class="btn-red" (click)="submitStop()">சமர்ப்பிக்க</button>
-            </div>
-        </div>
-    </div>
 
     <!-- ================= PAGE =================
     <div class="page-bg">

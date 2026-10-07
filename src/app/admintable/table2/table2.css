@@ -14,8 +14,8 @@
 ===================================== */
 .table-scroll-wrapper {
     width: 100%;
-    max-height: calc(100vh - 220px);
-    /* header + buttons + footer safe */
+    max-height: calc(100vh - 280px);
+    /* header + buttons + the site's fixed (position:fixed) footer safe */
     overflow-y: auto;
     /* ✅ vertical scroll */
     overflow-x: auto;
@@ -28,11 +28,28 @@
    TABLE BASE
 ===================================== */
 .report-table {
-    min-width: 2200px;
+    min-width: 3150px;
     border-collapse: collapse;
     table-layout: fixed;
     font-family: "Noto Sans Tamil", sans-serif;
     font-size: 14px;
+}
+
+.narrow-col {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }
 
 /* =====================================
@@ -85,7 +102,7 @@
 /* =====================================
    MAIN HEADER (STICKY)
 ===================================== */
-.report-table thead tr:not(.top-header):not(.top-sub-header) th {
+.report-table thead tr:not(.top-header):not(.top-sub-header):not(.col-number-row) th {
     background: #61b9c0;
     color: #ffffff;
     font-size: 13px;
@@ -197,4 +214,73 @@
 
 .filter-section select {
     padding: 4px;
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+/* =====================================
+   VIEW TOGGLE / ABSTRACT / GRAND TOTAL
+===================================== */
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.abstract-table {
+    min-width: 1400px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 110px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
 }

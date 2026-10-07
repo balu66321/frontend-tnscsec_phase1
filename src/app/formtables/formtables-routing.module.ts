@@ -5,6 +5,7 @@ import { Formt2 } from './formt2/formt2';
 import { Formt3 } from './formt3/formt3';
 import { Formt5 } from './formt5/formt5';
 import { Formt6 } from './formt6/formt6';
+import { Formt6List } from './formt6list/formt6list';
 import { Formt7 } from './formt7/formt7';
 import { Formt8 } from './formt8/formt8';
 import { Formt10 } from './formt10/formt10';
@@ -33,6 +34,9 @@ const routes: Routes = [
   },
   {
     path: 'formt6', component: Formt6
+  },
+  {
+    path: 'formt6list', component: Formt6List
   },
   {
     path: 'formt7', component: Formt7

@@ -1,0 +1,163 @@
+/* Table base */
+.report-table {
+    min-width: 3600px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: "Noto Sans Tamil", sans-serif;
+    font-size: 14px;
+}
+
+.empty-table-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #d32f2f;
+
+    background: #fff;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Common border */
+.report-table th,
+.report-table td {
+    border: 1px solid #4d7c0f;
+}
+
+/* ===== TOP HEADER ===== */
+.top-header th {
+    background: #b7e3a1;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+/* ===== TOP SUB HEADER ===== */
+.top-sub-header th {
+    background: #c6efb3;
+    text-align: left;
+    padding: 6px 10px;
+    position: sticky;
+    top: 36px;
+    z-index: 49;
+}
+
+/* ===== MAIN HEADER ===== */
+.main-header th {
+    background: #61b9c0;
+    color: #fff;
+    padding: 6px;
+    line-height: 1.3;
+    position: sticky;
+    top: 68px;
+    z-index: 48;
+}
+
+/* ===== SUB HEADER ===== */
+.sub-header th {
+    background: #9fd38a;
+    font-size: 12px;
+    padding: 4px;
+    position: sticky;
+    top: 110px;
+    z-index: 47;
+}
+
+/* ======================================
+   BODY CELLS
+====================================== */
+.report-table td {
+    border: 1px solid #4d7c0f;
+    padding: 6px;
+    text-align: center;
+    vertical-align: top;
+}
+
+/* ======================================
+   COLUMN WIDTHS
+====================================== */
+.col-small {
+    width: 60px;
+}
+
+.col-medium {
+    width: 180px;
+}
+
+.col-name {
+    width: 280px;
+    min-width: 260px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.col-num {
+    width: 80px;
+    min-width: 70px;
+}
+
+.col-namelist {
+    width: 220px;
+    min-width: 200px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.text-left {
+    text-align: left;
+}
+
+/* ======================================
+   LAYOUT / SCROLL
+====================================== */
+.page-content {
+    position: fixed;
+    top: 90px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.table-scroll-wrapper {
+    height: calc(100% - 50px);
+    overflow: auto;
+    border: 1px solid #4d7c0f;
+    background: #fff;
+}
+
+.table-actions {
+    height: 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.action-btn {
+    padding: 6px 14px;
+    border: 1px solid #4d7c0f;
+    background: #e5f7e5;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background: #c7e9c7;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+}

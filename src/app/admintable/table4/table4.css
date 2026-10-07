@@ -1,19 +1,3 @@
-/* ================= PAGE ================= */
-
-.page-content {
-    position: fixed;
-    top: 90px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
-    background: #f3f4f6;
-}
-
 /* ================= ACTION BAR ================= */
 
 .table-actions {
@@ -47,6 +31,16 @@
 .filter-section label {
 
     font-weight: 600;
+
+}
+
+/* Keeps each label+select pair together on one line when the
+   filter row wraps, instead of the select splitting off alone. */
+.filter-item {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
 }
 
@@ -90,7 +84,10 @@
 
 .table-scroll-wrapper {
 
-    flex: 1;
+    width: 100%;
+
+    max-height: calc(100vh - 260px);
+    /* leaves headroom for the site's fixed (position:fixed) footer */
 
     overflow: auto;
 
@@ -104,9 +101,9 @@
 
 .report-table {
 
+    /* width: max-content combined with table-layout: fixed is undefined
+       across browsers — see table3.css for the full explanation. */
     min-width: 3200px;
-
-    width: max-content;
 
     border-collapse: collapse;
 
@@ -167,7 +164,7 @@
 
 }
 
-.main-header th {
+.group-header th {
 
     background: #5fa9b0;
 
@@ -181,15 +178,27 @@
 
 }
 
-.sub-header th {
+.mid-header th {
 
-    background: #9fd38a;
+    background: #a7d38f;
 
     position: sticky;
 
     top: 130px;
 
     z-index: 97;
+
+}
+
+.sub-header th {
+
+    background: #9fd38a;
+
+    position: sticky;
+
+    top: 170px;
+
+    z-index: 96;
 
 }
 
@@ -229,6 +238,18 @@
 
 }
 
+.wrap-col {
+
+    width: 380px;
+
+    min-width: 380px;
+
+    text-align: left;
+
+    word-break: break-word;
+
+}
+
 /* ================= TEXT ================= */
 
 .text-left {
@@ -255,6 +276,16 @@
 
         width: 100%;
 
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+    .filter-item {
+
+        width: 100%;
+
     }
 
     .filter-section select {
@@ -263,4 +294,81 @@
 
     }
 
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+/* =====================================
+   VIEW TOGGLE / ABSTRACT / GRAND TOTAL
+===================================== */
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.abstract-table {
+    min-width: 1900px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 100px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

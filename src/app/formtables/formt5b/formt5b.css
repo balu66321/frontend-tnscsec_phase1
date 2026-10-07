@@ -9,7 +9,7 @@
 
 /* ===== Table ===== */
 .report-table {
-    min-width: 2400px;
+    min-width: 3600px;
     /* முக்கியம் */
     width: max-content;
     border-collapse: collapse;
@@ -45,8 +45,24 @@
     color: #fff;
 }
 
+.mid-header th {
+    background: #7dbfae;
+    color: #fff;
+}
+
 .sub-header th {
     background: #9fd38a;
+}
+
+.wrap-col {
+    white-space: normal;
+    word-break: break-word;
+    width: 220px;
+    min-width: 200px;
+}
+
+.text-left {
+    text-align: left;
 }
 
 /* ===== STICKY FIX (IMPORTANT) ===== */
@@ -68,10 +84,16 @@
     z-index: 98;
 }
 
-.sub-header th {
+.mid-header th {
     position: sticky;
     top: 135px;
     z-index: 97;
+}
+
+.sub-header th {
+    position: sticky;
+    top: 180px;
+    z-index: 96;
 }
 
 /* ===== Row styling ===== */
@@ -111,4 +133,11 @@
 
 .export-btn:hover {
     background: #cdeacb;
+}
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

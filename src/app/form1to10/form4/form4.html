@@ -18,7 +18,7 @@
 
     <!-- F3 -->
     <label class="section-label">தேர்தல் அறிவிப்பின்படி வேட்புமனு தாக்கல் நடைபெற வேண்டிய சங்கங்கள் மற்றும்
-        உறுப்பினர்களின் எண்ணிக்கை
+        தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை
     </label>
     <div class="large-box">
         <div class="f4-row" *ngFor="let soc of societyList">
@@ -27,8 +27,8 @@
                 {{ soc.society_name }}
             </div>
 
-            <div class="f4-input-group"><span class="f4-label">ஆ.தி./ப.கு</span><input class="f4-input"
-                    [value]="soc.sc_st" readonly /></div>
+            <div class="f4-input-group"><span class="f4-label">ப.தி./ப.கு
+                </span><input class="f4-input" [value]="soc.sc_st" readonly /></div>
             <div class="f4-input-group"><span class="f4-label">மகளிர்</span><input class="f4-input" [value]="soc.women"
                     readonly /></div>
             <div class="f4-input-group"><span class="f4-label">பொது</span><input class="f4-input" [value]="soc.general"
@@ -43,7 +43,7 @@
     <br>
 
     <!-- F4 -->
-    <label class="section-label">வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
+    <label class="section-label">வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் வேட்பாளர்களின் எண்ணிக்கை
     </label>
 
     <div class="large-box" *ngIf="selectedSocietyList.length; else empty">
@@ -93,30 +93,21 @@
         <div class="large-box empty-text">எந்த சங்கமும் தேர்வு செய்யப்படவில்லை</div>
     </ng-template>
     <label class="section-label">
-        வேட்புமனு தாக்கல் செய்யப்படாத சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
-    </label>
-    <div class="large-box" *ngIf="unselectedSocietyList.length">
+        வேட்பு மனு தாக்கல் நடைபெறாத சங்கங்களின் பெயர் மற்றும் காரணம் </label>
+    <div class="unselected-box" *ngIf="unselectedSocietyList.length">
 
-        <div class="f4-row" *ngFor="let soc of unselectedSocietyList">
+        <div *ngFor="let soc of unselectedSocietyList" class="unselected-item unselected-reason-row">
 
-            <div class="f4-name">
-                {{ soc.society_name }}
-            </div>
+            <span class="unselected-name">{{ soc.society_name }}</span>
 
-            <div class="f4-input-group">
-                <span class="f4-label">ப.தி./ப.கு</span>
-                <input class="f4-input" [value]="soc.sc_st" readonly />
-            </div>
+            <select class="reason-dropdown" [(ngModel)]="soc.reason" [name]="'reason-' + soc.society_id">
+                <option value="" disabled selected hidden>காரணம் தேர்வு செய்யவும்</option>
+                <option *ngFor="let r of reasonOptions" [value]="r.value">{{ r.label }}</option>
+            </select>
 
-            <div class="f4-input-group">
-                <span class="f4-label">மகளிர்</span>
-                <input class="f4-input" [value]="soc.women" readonly />
-            </div>
-
-            <div class="f4-input-group">
-                <span class="f4-label">பொது</span>
-                <input class="f4-input" [value]="soc.general" readonly />
-            </div>
+            <textarea *ngIf="soc.reason === 'other'" class="other-reason-box" [(ngModel)]="soc.otherReasonText"
+                [name]="'otherReason-' + soc.society_id" maxlength="555"
+                placeholder="காரணத்தை உள்ளிடவும் (அதிகபட்சம் 555 எழுத்துகள்)"></textarea>
 
         </div>
 

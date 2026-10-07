@@ -1,7 +1,7 @@
 <div class="step-container">
 
   <h2 class="title">படிவம் 1</h2>
-  <h3 class="sub-title">மாவட்டத் தேர்வு அலுவலரால் தேர்வு அறிக்கை பதிவு செய்யப்பட்ட விவரம்</h3>
+  <h3 class="sub-title">மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட விவரம்</h3>
 
   <div class="form-grid">
     <div class="form-column">
@@ -18,7 +18,12 @@
       <input type="text" class="input-box" [(ngModel)]="district_name" readonly>
 
 
-      <label class="label">தேர்தல் ஆணையத்தால் தேர்தல் திட்டம் வழங்கப்பட்ட சங்கங்களின் பெயர்</label>
+      <!-- <label class="label">தேர்தல் ஆணையத்தால் தேர்தல் திட்டம் வழங்கப்பட்ட சங்கங்களின் பெயர்</label> -->
+      <label class="label">மாநில தேர்தல் அலுவலரால் திட்டம் கோரப்பட்ட சங்கங்கள்
+
+
+      </label>
+
       <!-- <textarea class="textarea-box" [(ngModel)]="masterZonesText" readonly></textarea> -->
       <div class="society-list-box">
         <div *ngFor="let item of masterZones12" class="society-item">
@@ -35,12 +40,17 @@
 
   <div class="form-grid">
     <div class="form-column">
-      <label class="label">தேர்தல் ஆணையத்தால் திட்டம் வழங்கப்பட்ட சங்கங்களின் எண்ணிக்கை</label>
+      <label class="label">மாநில தேர்தல் அலுவலரால் திட்டம் கோரப்பட்ட சங்கங்களின் எண்ணிக்கை</label>
       <input type="text" class="input-box" [(ngModel)]="plannedSocietiesCount" readonly>
     </div>
 
     <div class="form-column">
-      <label class="label">மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட சங்கங்களின் பெயர்</label>
+      <!-- <label class="label">மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட சங்கங்களின் பெயர்</label> -->
+      <label class="label">மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட சங்கங்களின் பெயர்கள்
+
+
+      </label>
+
       <div class="checkbox-list">
         <div *ngFor="let item of masterZones12; let i=index" class="checkbox-item">
           <input type="checkbox" [(ngModel)]="item.selected" (change)="onCheckboxChange()" [disabled]="isLoadingDetails"
@@ -83,7 +93,9 @@
   </table> -->
 
 
-  <h3 class="label">நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை</h3>
+  <h3 class="label">தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை
+
+  </h3>
 
   <div class="table-responsive" *ngIf="ruralDetails.length > 0">
 
@@ -113,21 +125,28 @@
   </div>
   <br>
   <h4 class="label">
-    மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்படாத சங்கங்களின் பெயர்
+    தேர்தல் அறிவிப்பு வழங்கப்படாத சங்கங்களின் பெயர்கள்
+
+
   </h4>
 
   <div class="unselected-box" *ngIf="unselectedList.length > 0">
-    <div *ngFor="let name of unselectedList" class="unselected-item">
-      {{ name }}
+    <div *ngFor="let item of unselectedList" class="unselected-item unselected-reason-row">
+
+      <span class="unselected-name">{{ item.name }}</span>
+
+      <select class="reason-dropdown" [(ngModel)]="item.reason" [name]="'reason-' + item.name">
+        <option value="" disabled selected hidden>காரணம் தேர்வு செய்யவும்</option>
+        <option *ngFor="let r of reasonOptions" [value]="r.value">{{ r.label }}</option>
+      </select>
+
+      <textarea *ngIf="item.reason === 'other'" class="other-reason-box" [(ngModel)]="item.otherReasonText"
+        [name]="'otherReason-' + item.name" maxlength="555"
+        placeholder="காரணத்தை உள்ளிடவும் (அதிகபட்சம் 555 எழுத்துகள்)"></textarea>
+
     </div>
   </div>
   <br>
-
-
-  <label class="label">குறிப்புரை</label>
-  <!-- <textarea class="note-box"></textarea> -->
-  <textarea class="note-box" [(ngModel)]="noteText"></textarea>
-
 
 
   <div class="form-actions">

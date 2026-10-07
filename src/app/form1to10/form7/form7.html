@@ -83,8 +83,7 @@
 
     <!-- ================= F5 ================= -->
     <label class="section-label">
-        பதிவான ஓட்டுகளின் எண்ணிக்கை
-    </label>
+        வாக்குப்பதிவு நடைபெறும் சங்கங்களின் பெயர் மற்றும் விபரம் </label>
 
     <div class="table-box scroll-table">
         <table>
@@ -98,6 +97,11 @@
                     </th>
 
                     <th>
+                        வாக்குப்பதிவு<br>
+                        நாள்
+                    </th>
+
+                    <th>
                         மொத்த<br>
                         வாக்காளர்களின்<br>
                         எண்ணிக்கை
@@ -106,13 +110,12 @@
                     <!-- 🔥 Missing column added -->
                     <th>
                         பதிவான<br>
-                        ஓட்டுகளின்<br>
+                        வாக்குகளின்<br>
                         எண்ணிக்கை
                     </th>
 
                     <th>
-                        வாக்குப்பதிவு<br>
-                        (%)
+                        வாக்குப்பதிவு சதவிகிதம் (%)
                     </th>
 
                     <th>
@@ -122,27 +125,8 @@
                     </th>
 
                     <th>
-                        மீதமுள்ள<br>
-                        தாள்களின்<br>
-                        எண்ணிக்கை
-                    </th>
-
-                    <th>
-                        வாக்குப்பதிவு<br>
-                        நடைபெறாத<br>
-                        இடங்களின்<br>
-                        எண்ணிக்கை
-                    </th>
-
-                    <th>
                         வாக்குப்பதிவின் போது<br>
-                        பயன்படுத்தப்பட்ட அலுவலர் /<br>
-                        உதவியாளர் எண்ணிக்கை
-                    </th>
-
-                    <th>
-                        வாக்குப்பதிவின் போது<br>
-                        தேர்தல் நிறுத்தப்பட்டதற்கான<br>
+                        நிறுத்தப்பட்டதற்கான<br>
                         காரணம்
                     </th>
                 </tr>
@@ -153,6 +137,11 @@
 
                     <td class="society-cell">
                         {{ s.society_name }}
+                    </td>
+
+                    <!-- polling_date -->
+                    <td>
+                        <input type="date" class="table-input" [(ngModel)]="s.polling_date">
                     </td>
 
                     <!-- form3_total -->
@@ -176,39 +165,17 @@
                         <input type="number" class="table-input" [(ngModel)]="s.ballot_box_count">
                     </td>
 
-                    <!-- stamp_count -->
-                    <td>
-                        <input type="number" class="table-input" [(ngModel)]="s.stamp_count">
-                    </td>
+                    <!-- stop_reason -->
+                    <td class="reason-cell">
+                        <select class="reason-dropdown" [(ngModel)]="s.stop_reason" [name]="'stop-reason-' + s.society_id">
+                            <option value="">காரணம் தேர்வு செய்யவும்</option>
+                            <option *ngFor="let r of reasonOptions" [value]="r.value">{{ r.label }}</option>
+                        </select>
 
-                    <!-- polling_stations_count -->
-                    <td>
-                        <input type="number" class="table-input" [(ngModel)]="s.polling_stations_count">
-                    </td>
-
-                    <!-- election_officers_count -->
-                    <td>
-                        <input type="number" class="table-input" [(ngModel)]="s.election_officers_count">
-                    </td>
-
-                    <!-- polling_suspension_count -->
-                    <td class="checkbox-cell">
-
-                        <!-- Rule 52 (18)(a) -->
-                        <label>
-                            <input type="checkbox" [checked]="s.polling_suspension_count === 'RULE_52_18'"
-                                (change)="setRule(s, 'RULE_52_18', $event)">
-                            விதி 52 (18)(a)
-                        </label>
-                        <br>
-
-                        <label>
-                            <input type="checkbox" [checked]="s.polling_suspension_count === 'RULE_52A_6'"
-                                (change)="setRule(s, 'RULE_52A_6', $event)">
-                            விதி 52-A(6)(b)
-                        </label>
-
-
+                        <textarea *ngIf="s.stop_reason === 'other'" class="other-reason-box"
+                            [(ngModel)]="s.stop_other_reason_text" [name]="'stop-other-reason-' + s.society_id"
+                            maxlength="555"
+                            placeholder="காரணத்தை உள்ளிடவும் (அதிகபட்சம் 555 எழுத்துகள்)"></textarea>
                     </td>
 
                 </tr>

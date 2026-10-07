@@ -26,90 +26,250 @@
     <!-- <button class="action-btn export-btn" (click)="exportToExcel()">
         ⬇ Export Excel
     </button> -->
+    <button class="action-btn view-toggle-btn" (click)="toggleViewMode()">
+        {{ viewMode === 'full' ? '📊 சுருக்க அட்டவணை (Abstract)' : '📋 முழு அட்டவணை (Full List)' }}
+    </button>
+
     <button class="export-btn" (click)="downloadPdf()">
-        📄 Download PDF
+        📄 {{ viewMode === 'abstract' ? 'Download Abstract PDF' : 'Download PDF' }}
     </button>
 </div>
 
-<div class="table-scroll-wrapper">
+<!-- ABSTRACT (DISTRICT/ZONE-WISE SUMMARY) TABLE -->
+<div class="table-scroll-wrapper" *ngIf="viewMode === 'abstract'">
 
-    <table class="report-table" id="reportTable">
+    <table class="report-table abstract-table" id="abstractTable">
 
         <thead>
 
             <tr class="top-header">
-                <th colspan="7">
-                    சங்கம் உறுப்பினர் பட்டியல் வெளியிடுதல் மற்றும் வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல்
-                    அளித்த/அளிக்காத சங்கங்கள் விவரம்
+                <th colspan="10">
+                    மாவட்டம் / சரகம் வாரியான சுருக்க எண்ணிக்கை விவரம்
                 </th>
             </tr>
 
             <tr class="top-sub-header">
-                <th colspan="7">
+                <th colspan="10">
                     துறை -- {{ department_name }}
                 </th>
             </tr>
 
-            <tr>
+            <tr class="main-header">
+                <th rowspan="2">வ.எண்</th>
+                <th rowspan="2">மாவட்டம்</th>
+                <th rowspan="2">சரகம்</th>
 
-                <th>மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
-
-                <th>மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
-
-                <th class="wrap-col">
-                    Form-1 ல் தேர்வு செய்யப்பட்ட சங்கங்கள் (F3)
+                <th rowspan="2">
+                    உறுப்பினர் பட்டியல் தயாரிக்க வேண்டிய சங்கங்களின் எண்ணிக்கை
                 </th>
 
-                <th class="wrap-col">
-                    உறுப்பினர் பட்டியல் அளித்த சங்கங்கள் (F5)
+                <th colspan="2">
+                    உறுப்பினர் பட்டியல் தயாரித்த சங்கங்கள்
                 </th>
 
-                <th class="wrap-col">
-                    உறுப்பினர் பட்டியல் அளிக்காத சங்கங்கள் (F6)
+                <th colspan="2">
+                    உறுப்பினர் பட்டியல் தயாரிக்காத சங்கங்கள்
                 </th>
 
-                <th>
-                    அளிக்காத சங்கங்களின் எண்ணிக்கை
+                <th colspan="2">
+                    வாக்காளர் பட்டியல் அலுவலரால் தயாரிக்கப்பட்ட சங்கங்கள்
                 </th>
+            </tr>
 
-                <th>குறிப்பு</th>
+            <tr class="sub-header">
+                <th>சங்கங்களின் எண்ணிக்கை</th>
+                <th>உறுப்பினர் எண்ணிக்கை</th>
 
+                <th>சங்கங்களின் எண்ணிக்கை</th>
+                <th>உறுப்பினர் எண்ணிக்கை</th>
+
+                <th>சங்கங்களின் எண்ணிக்கை</th>
+                <th>உறுப்பினர் எண்ணிக்கை</th>
             </tr>
 
         </thead>
 
         <tbody>
+            <tr *ngIf="abstractRows.length === 0">
+                <td colspan="10" class="empty-table-message">
+                    தயவுசெய்து முதலில் படிவம் 2-ஐ பூர்த்தி செய்யவும்.
+                </td>
+            </tr>
 
-            <tr *ngFor="let r of tableRows">
+            <tr *ngFor="let a of abstractRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td class="text-left">{{ a.district_name }}</td>
+                <td class="text-left">{{ a.zone_name }}</td>
 
-                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+                <td>{{ a.requiredCount }}</td>
+
+                <td>{{ a.preparedCount }}</td>
+                <td>{{ a.preparedVoterTotal }}</td>
+
+                <td>{{ a.notPreparedCount }}</td>
+                <td>{{ a.notPreparedVoterTotal }}</td>
+
+                <td>{{ a.officerPreparedCount }}</td>
+                <td>{{ a.officerPreparedVoterTotal }}</td>
+            </tr>
+
+            <!-- GRAND TOTAL -->
+            <tr *ngIf="abstractRows.length > 0" class="grand-total-row">
+                <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+                <td><strong>{{ grandTotal.requiredCount }}</strong></td>
+                <td><strong>{{ grandTotal.preparedCount }}</strong></td>
+                <td><strong>{{ grandTotal.preparedVoterTotal }}</strong></td>
+                <td><strong>{{ grandTotal.notPreparedCount }}</strong></td>
+                <td><strong>{{ grandTotal.notPreparedVoterTotal }}</strong></td>
+                <td><strong>{{ grandTotal.officerPreparedCount }}</strong></td>
+                <td><strong>{{ grandTotal.officerPreparedVoterTotal }}</strong></td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="table-scroll-wrapper" *ngIf="viewMode === 'full'">
+
+    <table class="report-table" id="reportTable">
+
+        <thead>
+
+            <!-- TOP HEADER -->
+            <tr class="top-header">
+                <th colspan="10">
+                    சங்கம் உறுப்பினர் பட்டியல் வெளியிடுதல் மற்றும் வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல்
+                    அளித்த/அளிக்காத சங்கங்கள் விவரம் </th>
+            </tr>
+            <!-- SUB HEADER -->
+            <tr class="top-sub-header">
+                <th colspan="10">
+                    துறை -- {{ department_name }}
+                </th>
+            </tr>
+
+            <!-- GROUP HEADER -->
+            <tr class="main-header">
+                <th rowspan="2" class="col-small">வ.எண்</th>
+                <th rowspan="2" class="narrow-col">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+                <th rowspan="2" class="narrow-col">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
+
+                <th rowspan="2" class="wrap-col">
+                    உறுப்பினர் பட்டியல் தயாரிக்க வேண்டிய சங்கங்கள்<br>
+                    கலம் 6, படிவம் 1-ல் உள்ள சங்கங்கள்
+                </th>
+
+                <th colspan="2">
+                    உறுப்பினர் பட்டியல் தயாரித்த சங்கங்கள் மற்றும் உறுப்பினர் எண்ணிக்கை
+                </th>
+
+                <th colspan="2">
+                    உறுப்பினர் பட்டியல் தயாரிக்காத சங்கங்கள் மற்றும் உறுப்பினர் எண்ணிக்கை
+                </th>
+
+                <th colspan="2">
+                    வாக்காளர் பட்டியல் அலுவலரால் தயாரிக்கப்பட்ட சங்கங்களின் பெயர் மற்றும் உறுப்பினர் எண்ணிக்கை
+                </th>
+            </tr>
+
+            <!-- SUB HEADER -->
+            <tr class="sub-header">
+                <th>சங்கத்தின் பெயர்</th>
+                <th class="narrow-col">உறுப்பினர் எண்ணிக்கை</th>
+
+                <th>சங்கத்தின் பெயர்</th>
+                <th class="narrow-col">உறுப்பினர் எண்ணிக்கை</th>
+
+                <th>சங்கத்தின் பெயர்</th>
+                <th class="narrow-col">உறுப்பினர் எண்ணிக்கை</th>
+            </tr>
+
+            <!-- COLUMN NUMBER ROW -->
+            <tr class="col-number-row">
+                <th class="col-number-cell">1</th>
+                <th class="col-number-cell">2</th>
+                <th class="col-number-cell">3</th>
+                <th class="col-number-cell">4</th>
+                <th class="col-number-cell">5</th>
+                <th class="col-number-cell">6</th>
+                <th class="col-number-cell">7</th>
+                <th class="col-number-cell">8</th>
+                <th class="col-number-cell">9</th>
+                <th class="col-number-cell">10</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+            <tr *ngIf="tableRows.length === 0">
+                <td colspan="10" class="empty-table-message">
+                    தயவுசெய்து முதலில் படிவம் 2-ஐ பூர்த்தி செய்யவும்.
+                </td>
+            </tr>
+
+            <tr *ngFor="let r of tableRows; let i = index">
+
+                <!-- Serial (once per district) -->
+                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.districtSerial }}</td>
+
+                <!-- District -->
+                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="narrow-col">
                     {{ r.district_name }}
                 </td>
 
-                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
+                <!-- Zone -->
+                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="narrow-col">
                     {{ r.zone_name }}
                 </td>
 
+                <!-- F3 -->
                 <td class="wrap-col text-left">
                     {{ r.f3_name || '-' }}
                 </td>
 
+                <!-- F5 name -->
                 <td class="wrap-col text-left total-cell">
                     {{ r.f5_name || '-' }}
                 </td>
 
+                <!-- Selected/prepared societies — voter list count -->
+                <td class="narrow-col">
+                    {{ r.f5_name ? (r.voter_list_prepared_count ?? '-') : '' }}
+                </td>
+
+                <!-- F6 name -->
                 <td class="wrap-col text-left danger-text">
                     {{ r.f6_name || '-' }}
                 </td>
 
-                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
-                    {{ r.non_selected_count }}
+                <!-- Non-selected societies — voter list count -->
+                <td class="narrow-col">
+                    {{ r.f6_name ? (r.voter_list_prepared_count ?? '-') : '' }}
                 </td>
 
-                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="note-cell">
-                    {{ r.remark }}
+                <!-- Officer-prepared voter list — society name (non-selected side / f6) -->
+                <td class="wrap-col text-left">
+                    {{ r.f6_name || '-' }}
                 </td>
 
+                <!-- Officer-prepared voter list — count -->
+                <td class="narrow-col">
+                    {{ r.f6_name ? (r.voter_list_prepared_count ?? '-') : '' }}
+                </td>
+
+            </tr>
+
+            <!-- GRAND TOTAL (sums every district currently shown, i.e.
+                 respects the Department/District filter above) -->
+            <tr *ngIf="tableRows.length > 0" class="grand-total-row">
+                <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+                <td></td>
+                <td><strong>{{ grandTotal.preparedVoterTotal }}</strong></td>
+                <td></td>
+                <td><strong>{{ grandTotal.notPreparedVoterTotal }}</strong></td>
+                <td></td>
+                <td><strong>{{ grandTotal.notPreparedVoterTotal }}</strong></td>
             </tr>
 
         </tbody>

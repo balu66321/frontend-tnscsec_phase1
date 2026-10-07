@@ -7,67 +7,31 @@
         <!-- Header -->
         <div class="popup-header">
             <h3>{{ selectedSociety?.society_name }}</h3>
+            <span class="popup-valid-count">செல்லுபடியான வாக்குகள்: {{ selectedSociety?.valid_votes }}</span>
             <span class="close-btn" (click)="closePreview()">✖</span>
         </div>
 
         <!-- Scrollable Content -->
         <div class="member-scroll">
 
-            <!-- Rural Count Table -->
-            <div class="mini-table">
-                <label class="mini-title">சங்கத்தின் எண்ணிக்கை</label>
-
-                <table>
-                    <tr>
-                        <th>ப.தி./ப.கு</th>
-                        <th>மகளிர்</th>
-                        <th>பொது</th>
-                    </tr>
-                    <tr>
-                        <td>{{ selectedSociety?.rural?.sc_st }}</td>
-                        <td>{{ selectedSociety?.rural?.women }}</td>
-                        <td>{{ selectedSociety?.rural?.general }}</td>
-                    </tr>
-                </table>
-            </div>
-
             <!-- Member Grid -->
             <div class="member-grid">
 
-                <!-- SC/ST -->
-                <div class="member-col">
-                    <h5>ப.தி./ப.கு</h5>
+                <div class="member-col" *ngFor="let cat of memberCategories">
+                    <h5>{{ cat.label }}</h5>
 
-                    <div *ngFor="let m of getMembers('SC_ST')" class="member-box">
-                        <label>
-                            <input type="checkbox" (change)="onMemberToggle(m, 'SC_ST', $event)">
-                            {{ m.member_name }} - xxxx xxxx {{ m.aadhar_no.slice(-4) }}
-                        </label>
-                    </div>
-                </div>
-
-                <!-- WOMEN -->
-                <div class="member-col">
-                    <h5>மகளிர்</h5>
-
-                    <div *ngFor="let m of getMembers('WOMEN')" class="member-box">
-                        <label>
-                            <input type="checkbox" (change)="onMemberToggle(m, 'WOMEN', $event)">
-                            {{ m.member_name }} - xxxx xxxx {{ m.aadhar_no.slice(-4) }}
-                        </label>
-                    </div>
-                </div>
-
-                <!-- GENERAL -->
-                <div class="member-col">
-                    <h5>பொது</h5>
-
-                    <div *ngFor="let m of getMembers('GENERAL')" class="member-box">
-                        <label>
-                            <input type="checkbox" (change)="onMemberToggle(m, 'GENERAL', $event)">
-                            {{ m.member_name }} - xxxx xxxx {{ m.aadhar_no.slice(-4) }}
-                        </label>
-                    </div>
+                    <table class="vote-table">
+                        <tr>
+                            <th>வேட்பாளர் பெயர்</th>
+                            <th>பெற்ற வாக்குகள்</th>
+                        </tr>
+                        <tr *ngFor="let m of getMembers(cat.key)">
+                            <td>{{ m.member_name }} - xxxx xxxx {{ m.aadhar_no.slice(-4) }}</td>
+                            <td>
+                                <input type="text" inputmode="numeric" maxlength="4" class="vote-input" [(ngModel)]="m.votes_obtained" (keypress)="($event.key >= '0' && $event.key <= '9') || $event.preventDefault()">
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
             </div>
@@ -141,7 +105,7 @@
 
     <h2 class="form">படிவம் 8</h2>
     <h2 class="form-title">
-        வேட்புமனு தாக்கல் செய்த உறுப்பினர்களின் பெயர் மற்றும் விபரம்
+        வாக்கு எண்ணிக்கை மற்றும் தேர்தல் முடிவுகள் விபரம்
     </h2>
 
     <!-- District & Zone -->
@@ -158,28 +122,6 @@
         </div>
     </div>
 
-    <h3 class="table-title">தேர்தல் நிறுத்தப்பட்ட சங்கங்கள்</h3>
-
-    <table class="custom-table" *ngIf="stoppedSocieties.length > 0">
-        <thead>
-            <tr>
-                <th>சங்கங்களின் பெயர்</th>
-                <th>மொத்த வாக்குப்பதிவு எண்ணிக்கை</th>
-                <th>நிறுத்தப்பட்ட விதி எண்</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let s of stoppedSocieties">
-                <td>{{ s.society_name }}</td>
-                <td>{{ s.casted_votes_count }}</td>
-                <td>{{ s.polling_suspension_count }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div *ngIf="stoppedSocieties.length === 0">
-        தரவு இல்லை
-    </div>
 
     <label class="section-label">
         வாக்கு எண்ணிக்கை பற்றிய விபரங்கள்
@@ -194,11 +136,10 @@
                         வாக்குப்பதிவு நடைபெற்ற<br>சங்கங்களின் பெயர்
                     </th>
                     <th class="col-total">மொத்த பதிவான வாக்குகள்</th>
-                    <th class="col-input">வாக்குப்பெட்டியில் இருந்த வாக்குகள்</th>
-                    <th class="col-input">செல்லுபடியான வாக்குகள்</th>
-                    <th class="col-input">செல்லுபடியாகாத வாக்குகள்</th>
-                    <th class="col-btn">வாக்கு</th>
-                    <th class="col-remark">குறிப்புகள்</th>
+                    <th class="col-input">வாக்கு எண்ணிக்கையின் போது வாக்குப் பெட்டியில் இருந்த வாக்குகளின் எண்ணிக்கை</th>
+                    <th class="col-input">செல்லுபடியான வாக்குகளின் எண்ணிக்கை</th>
+                    <th class="col-input">செல்லுபடியாகாத வாக்குகளின் எண்ணிக்கை</th>
+                    <th class="col-btn">வாக்குப்பதிவில் போட்டியிட்ட அனைத்து வேட்பாளர்கள் பெற்ற வாக்குகளின் எண்ணிக்கை</th>
                 </tr>
             </thead>
 
@@ -228,18 +169,13 @@
 
                     <td>
                         <button class="btn-blue" [disabled]="s.submitted" (click)="openPreviewPopup(s)">
-                            {{ s.submitted ? 'Selected' : 'பார்க்க' }}
+                            {{ s.submitted ? 'தேர்வு செய்யப்பட்டது' : 'தேர்வு செய்' }}
                         </button>
 
 
 
                     </td>
 
-                    <!-- 🔥 Larger remark field -->
-                    <td>
-                        <textarea class="remark-box" [(ngModel)]="s.remarks">
-                    </textarea>
-                    </td>
                 </tr>
             </tbody>
         </table>
@@ -247,4 +183,3 @@
     <div class="form8-action-bar">
         <button class="btn-grey" (click)="onCancel()">ரத்து செய்</button>
         <button class="btn-blue" (click)="onSubmitForm8()">சமர்ப்பிக்க</button>
-    </div>

@@ -3,7 +3,8 @@
     width: 100%;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: calc(100vh - 180px);
+    max-height: calc(100vh - 240px);
+    /* leaves headroom for the site's fixed (position:fixed) footer */
     border: 1px solid #4d7c0f;
 }
 
@@ -128,4 +129,73 @@
 
 .filter-section select {
     padding: 6px 10px;
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+/* =====================================
+   VIEW TOGGLE / ABSTRACT / GRAND TOTAL
+===================================== */
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.abstract-table {
+    min-width: 2800px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 100px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
 }

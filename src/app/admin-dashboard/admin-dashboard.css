@@ -8,10 +8,33 @@
     padding-bottom: 40px;
 }
 
+.forms-inner {
+    width: 70%;
+}
+
+.election-programme-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.election-programme-bar a {
+    background: #1976d2;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.election-programme-bar a:hover {
+    background: #1565c0;
+}
+
 /* BETTER TABLE WIDTH */
 .forms-table {
-    width: 70%;
-    /* smaller width */
+    width: 100%;
     border-collapse: collapse;
     background: #ffffff;
     border-radius: 6px;

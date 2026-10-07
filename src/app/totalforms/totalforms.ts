@@ -13,14 +13,14 @@ export class totalforms {
 
   formsList = [
     {
-      title: 'மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வெளியிடப்பட்ட விபரம்',
+      title: 'மாவட்ட தேர்தல் அலுவலரால் தேர்தல் அறிவிப்பு வழங்கப்பட்ட விவரம்',
       code: 'Form1',
       formLink: '/layout/form1to10/form1',
       tableLink: '/layout/formtables/formt1'
 
     },
     {
-      title: 'சங்கம் உறுப்பினர் பட்டியல் வெளியிடுதல் மற்றும் வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல் அனுப்ப அறிவிக்கப்பட்ட விபரம்',
+      title: 'சங்கம் உறுப்பினர் பட்டியல் வெளியிடுதல் மற்றும் வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல் அளித்த/அளிக்காத சங்கங்கள் விவரம்',
       code: 'Form2',
       formLink: '/layout/form1to10/form2',
       tableLink: '/layout/formtables/formt2'
@@ -42,8 +42,8 @@ export class totalforms {
 
     },
     {
-      title: 'வேட்புமனு தாக்கல் செய்த விவரங்கள் மற்றும் எதிர்ப்பு விபரம்',
-      code: 'Form5a',
+      title: 'வேட்புமனு தாக்கல் செய்தவர்களின் பெயர் மற்றும் ஆதார் விவரங்கள்',
+      code: 'Form5',
 
       formLink: '/layout/form1to10/form5',
       tableLink: '/layout/formtables/formt5'
@@ -51,7 +51,7 @@ export class totalforms {
     },
 
     {
-      title: 'வேட்புமனு பரிசீலனை மற்றும் செல்லத்தக்க வேட்புமனுக்கள் பட்டியல் பற்றிய விபரங்கள்',
+      title: 'வேட்புமனு பரிசீலனை மற்றும் தகுதிபெற்ற வேட்புமனுக்கள் பட்டியல் பற்றிய விவரங்கள்',
       code: 'Form5b',
 
       formLink: '/layout/form1to10/form5b',
@@ -60,22 +60,38 @@ export class totalforms {
     },
 
     {
-      title: 'வேட்புமனு திரும்ப பெறுதல் மற்றும் போட்டியிடும் வேட்பாளர்கள் விபரங்கள்', code: 'Form6',
+      title: 'வேட்புமனு திரும்பப் பெறுதல் மற்றும் போட்டியிடும் வேட்பாளர் இறுதிப் பட்டியல் பற்றிய எண்ணிக்கை விவரங்கள்', code: 'Form6',
 
       formLink: '/layout/form1to10/form6',
       tableLink: '/layout/formtables/formt6'
     },
     {
-      title: 'வாக்குப்பதிவு பற்றிய விபரங்கள்', code: 'Form7',
+      title: 'வேட்புமனு திரும்பப் பெறுதல் மற்றும் போட்டியிடும் வேட்பாளர் இறுதிப் பட்டியல் பற்றிய பெயர் விவரங்கள்',
+      code: 'Form6List',
+
+      formLink: '/layout/form1to10/form6',
+      tableLink: '/layout/formtables/formt6list'
+    },
+    {
+      title: 'தேர்தலில் போட்டியிடும் நிர்வாகக்குழு உறுப்பினர்களின் வாக்குப்பதிவு விவரங்கள்', code: 'Form7',
       formLink: '/layout/form1to10/form7',
       tableLink: '/layout/formtables/formt7'
     },
     {
-      title: 'வாக்கு எண்ணிக்கை பற்றிய விபரங்கள்', code: 'Form8',
+      title: 'வாக்கு எண்ணிக்கை மற்றும் தேர்தல் முடிவுகள் விபரம்', code: 'Form8',
       formLink: '/layout/form1to10/form8',
       tableLink: '/layout/formtables/formt8'
     },
-
+    {
+      title: 'சங்கத்தின் நிர்வாகக்குழு உறுப்பினர் தேர்தல் முழுமையாக முடிவுற்று தேர்ந்தெடுக்கப்பட்ட நிர்வாகக்குழு உறுப்பினர்களின் பெயர் பட்டியல்', code: 'Form8Names',
+      formLink: '',
+      tableLink: '/layout/form8names'
+    },
+    {
+      title: 'தேர்தல் நிறுத்தப்பட்ட சங்கங்களின் விவரம்', code: 'Form8OverallStoppedSocieties',
+      formLink: '',
+      tableLink: '/layout/form8overallstoppedsocieties'
+    },
     {
       title: 'தலைவர் தேர்தல் தொடர்பான விபரம்', code: 'Form9',
       formLink: '/layout/form1to10/form9',

@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout';
 import { AdminDashboard } from '../admin-dashboard/admin-dashboard';
+import { ElectionProgramme } from '../electionprogramme/electionprogramme';
+import { ElectionSchedule } from '../electionschedule/electionschedule';
+import { Form8Names } from '../form8names/form8names';
+import { Form8OverallStoppedSocieties } from '../form8overallstoppedsocieties/form8overallstoppedsocieties';
 
 const routes: Routes = [
   {
@@ -13,6 +17,24 @@ const routes: Routes = [
         loadChildren: () =>
           import('../totalforms/totalforms-routingmodule')
             .then(m => m.default)
+      },
+
+      {
+        path: 'electionprogramme',
+        component: ElectionProgramme
+      },
+
+      {
+        path: 'form8names',
+        component: Form8Names
+      },
+      {
+        path: 'form8overallstoppedsocieties',
+        component: Form8OverallStoppedSocieties
+      },
+      {
+        path: 'electionschedule',
+        component: ElectionSchedule
       },
 
       // ✅ ADMIN ROUTE (PUT YOUR CODE HERE)

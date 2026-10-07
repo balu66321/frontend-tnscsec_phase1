@@ -20,7 +20,8 @@
     <br>
 
     <!-- F3 -->
-    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் உறுப்பினர் பட்டியல் வெளியிடப்பட்ட சங்கங்கள்
+    <div class="row">சங்கம் அளித்த உறுப்பினர் பட்டியல்கள் அடிப்படையில் வரைவு வாக்காளர் பட்டியல் தயாரித்து வெளியிட்டுள்ள
+        சங்கங்களின் பெயர் உறுப்பினர்களின் எண்ணிக்கை
     </div>
     <!-- <div class="large-box">
         <div *ngFor="let soc of f3SocietyList; let i = index">
@@ -30,72 +31,45 @@
 
     <div class="large-box">
         <div class="society-card" *ngFor="let soc of f3SocietyList; let i = index">
-            {{ i + 1 }}. {{ soc.society_name }}
+            <span class="society-card-name">{{ i + 1 }}. {{ soc.society_name }}</span>
+            <span class="member-count-group">
+                <span class="member-count-label">உறுப்பினர் எண்ணிக்கை</span>
+                <span class="member-count-value">{{ soc.voter_list_prepared_count ?? '✘' }}</span>
+            </span>
         </div>
     </div>
     <br>
-    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட உறுப்பினர் எண்ணிக்கை
-    </div>
-    <!-- <div class="large-box">
-        <div class="f4-row" *ngFor="let soc of f3SocietyList; let i = index">
-            <div class="f4-name">{{ i + 1 }}. {{ soc.society_name }}</div>
-            <div class="f4-input-group">
-                <span class="f4-label">உறுப்பினர் எண்ணிக்கை</span>
-                <input type="number" class="f4-input" [(ngModel)]="voterCounts[i]" readonly />
-            </div>
-        </div>
-    </div> -->
 
-    <div class="large-box">
-        <div class="f4-row" *ngFor="let soc of f3SocietyList; let i = index">
-            <div class="f4-name">
-                {{ i + 1 }}. {{ soc.society_name }}
-            </div>
-
-            <div class="f4-input-group">
-                <span class="f4-label">உறுப்பினர் எண்ணிக்கை</span>
-
-                <!-- <input type="number" class="f4-input" [value]="voterCounts[i]" readonly /> -->
-                <!-- <input type="number" class="f4-input" [value]="memberCounts[i]" readonly /> -->
-
-
-                <!-- <input type="number" class="f4-input" [(ngModel)]="memberCounts[i]" readonly /> -->
-                <input type="number" class="f4-input" value="0" readonly />
-            </div>
-        </div>
-    </div>
-
-    <br>
-
-    <!-- F4 -->
-    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வாக்காளர்கள் எண்ணிக்கை
+    <!-- Societies with no member list — officer prepared the draft voter list himself -->
+    <div class="row">உறுப்பினர் பட்டியல் அளிக்கப்படாத சங்கங்களில், வாக்காளர் பட்டியல் அலுவலரே வரைவு வாக்காளர் பட்டியல்
+        தயாரித்து வெளியிட்ட சங்கங்களின் பெயர்கள் உறுப்பினர்களின் எண்ணிக்கை
     </div>
     <div class="large-box">
-        <div class="f4-row" *ngFor="let soc of f3SocietyList; let i = index">
-            <div class="f4-name">{{ i + 1 }}. {{ soc.society_name }}</div>
-            <div class="f4-input-group">
-                <span class="f4-label">வாக்காளர்கள் எண்ணிக்கை</span>
-                <input type="number" class="f4-input" [(ngModel)]="voterCounts[i]" />
-            </div>
+        <div class="society-card" *ngFor="let soc of f3NonMemberSocietyList; let i = index">
+            <span class="society-card-name">{{ i + 1 }}. {{ soc.society_name }}</span>
+            <span class="member-count-group">
+                <span class="member-count-label">உறுப்பினர் எண்ணிக்கை</span>
+                <span class="member-count-value">{{ soc.voter_list_prepared_count ?? '✘' }}</span>
+            </span>
         </div>
     </div>
-
     <br>
-
 
     <!-- F5 -->
     <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வாக்காளர் பட்டியலுக்கு கோருரிமை அல்லது மறுப்பு
         தெரிவிக்கப்பட்ட விபரம் (ஆம் / இல்லை)
     </div>
     <div class="large-box">
-        <div class="f5-row" *ngFor="let soc of f3SocietyList; let i = index">
+        <div class="f5-row" *ngFor="let soc of allSocietiesList; let i = index">
             <div class="f5-name">{{ i + 1 }}. {{ soc.society_name }}</div>
             <div class="f5-radio">
                 <label>
-                    <input type="radio" [name]="'f5_' + i" value="YES" [(ngModel)]="f5Answers[i]" /> ஆம்
+                    <input type="radio" [name]="'f5_' + soc.society_id" value="YES"
+                        [(ngModel)]="f5AnswersMap[soc.society_id]" /> ஆம்
                 </label>
                 <label>
-                    <input type="radio" [name]="'f5_' + i" value="NO" [(ngModel)]="f5Answers[i]" /> இல்லை
+                    <input type="radio" [name]="'f5_' + soc.society_id" value="NO"
+                        [(ngModel)]="f5AnswersMap[soc.society_id]" /> இல்லை
                 </label>
             </div>
         </div>
@@ -104,36 +78,36 @@
     <br>
 
     <!-- F6 -->
-    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வாக்காளர் பட்டியலில் திருத்தங்கள் மேற்கொள்ளப்பட்ட
-        சங்கங்கள் மற்றும் விபரம்
+    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வரைவு வாக்காளர் பட்டியலில் மேற்கொள்ளப்பட்ட திருத்தங்கள்
     </div>
     <div class="large-box">
-        <ng-container *ngFor="let soc of f3SocietyList; let i = index">
-            <div class="f6-row" *ngIf="f5Answers[i] === 'YES'">
+        <ng-container *ngFor="let soc of allSocietiesList">
+            <div class="f6-row" *ngIf="f5AnswersMap[soc.society_id] === 'YES'">
                 <div class="f6-name">{{ soc.society_name }}</div>
 
                 <div class="f6-input-group">
-                    <span class="f6-label">நீக்கப்பட்ட வாக்காளர்கள்</span>
-                    <input type="number" class="f6-input" [(ngModel)]="removedCounts[i]" />
+                    <span class="f6-label">நீக்கப்பட்ட உறுப்பினர் எண்ணிக்கை</span>
+                    <input type="number" class="f6-input" [(ngModel)]="removedCountsMap[soc.society_id]" />
                 </div>
 
                 <div class="f6-input-group">
-                    <span class="f6-label">சேர்க்கப்பட்ட வாக்காளர்கள்</span>
-                    <input type="number" class="f6-input" [(ngModel)]="remainingCounts[i]" />
+                    <span class="f6-label">சேர்க்கப்பட்ட உறுப்பினர் எண்ணிக்கை</span>
+                    <input type="number" class="f6-input" [(ngModel)]="remainingCountsMap[soc.society_id]" />
                 </div>
             </div>
         </ng-container>
     </div>
 
     <!-- F7 -->
-    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட இறுதி வாக்காளர் பட்டியல் - வாக்காளர்களின் எண்ணிக்கை
+    <div class="row">வாக்காளர் பட்டியல் அலுவலரால் இறுதி செய்யப்பட்ட வாக்காளர் பட்டியல் படி சங்க வாரியாக வாக்காளர்களின்
+        எண்ணிக்கை
     </div>
     <div class="large-box">
-        <div class="f7-row" *ngFor="let soc of f3SocietyList; let i = index">
+        <div class="f7-row" *ngFor="let soc of allSocietiesList; let i = index">
             <div class="f7-name">{{ i + 1 }}. {{ soc.society_name }}</div>
             <div class="f7-input-group">
                 <span class="f7-label">மொத்த வாக்காளர்கள்</span>
-                <input class="f7-input" [value]="voterCounts[i]" />
+                <input class="f7-input" [value]="finalVoterCount(soc)" readonly />
             </div>
         </div>
     </div>

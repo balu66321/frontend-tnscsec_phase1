@@ -14,8 +14,11 @@
 ===================================== */
 .table-scroll-wrapper {
     width: 100%;
-    max-height: calc(100vh - 220px);
-    /* header + buttons + footer safe */
+    max-height: calc(100vh - 230px);
+    /* header + buttons + the site's fixed (position:fixed) footer safe —
+       the footer doesn't participate in document flow, so it can sit on
+       top of a tall scrollable table unless this leaves enough headroom
+       for its own ~40px height plus a margin. */
     overflow-y: auto;
     /* ✅ vertical scroll */
     overflow-x: auto;
@@ -28,7 +31,10 @@
    TABLE BASE
 ===================================== */
 .report-table {
-    min-width: 2200px;
+    /* 2200px was sized for 13 columns; the 4 reason columns added on
+       top of the old single note column need the total width to grow
+       or table-layout:fixed starves the other auto-width columns. */
+    min-width: 2900px;
     border-collapse: collapse;
     table-layout: fixed;
     font-family: "Noto Sans Tamil", sans-serif;
@@ -61,6 +67,14 @@
     position: sticky;
     top: 0;
     z-index: 30;
+
+    /* Keep this row single-line — a long department/scheme name wrapping
+       to 2+ lines would make the row taller than the fixed px offsets
+       below assume, pushing every sticky row after it out of position
+       and letting body rows scroll up underneath/through the headers. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* =====================================
@@ -79,13 +93,27 @@
     position: sticky;
     top: 42px;
     z-index: 29;
+
+    /* Same reasoning as .top-header th above — a long துறை/மாவட்டம்
+       value must stay one line or the next sticky row's fixed top
+       offset no longer lines up with where this row actually ends. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Second top-sub-header row (துறை), stacked directly under the
+   மாவட்டம் row above — same look, offset one row lower. */
+.top-sub-header + .top-sub-header th {
+    top: 74px;
+    z-index: 28;
 }
 
 
 /* =====================================
    MAIN HEADER (STICKY)
 ===================================== */
-.report-table thead tr:not(.top-header):not(.top-sub-header) th {
+.report-table thead tr:not(.top-header):not(.top-sub-header):not(.col-number-row):not(.sub-header) th {
     background: #61b9c0;
     color: #ffffff;
     font-size: 13px;
@@ -95,8 +123,8 @@
     text-align: center;
 
     position: sticky;
-    top: 74px;
-    z-index: 28;
+    top: 106px;
+    z-index: 27;
 
     white-space: normal;
     word-break: break-word;
@@ -110,8 +138,45 @@
     color: #ffffff;
 
     position: sticky;
-    top: 116px;
-    z-index: 27;
+    top: 148px;
+    z-index: 26;
+}
+
+/* =====================================
+   FULL TABLE (#reportTable) OVERRIDES
+   It has only ONE top-sub-header row (துறை), unlike the abstract
+   summary table above which stacks two (துறை + மாவட்டம்) — the shared
+   106px/148px offsets above were tuned for that two-row case, so reusing
+   them here left a gap after the single top-sub-header row for the
+   scrolling body to show through. These re-tuned offsets, plus a
+   generous fixed height on the (often 2-3 line) main header, keep every
+   sticky row lined up with no gap for this table specifically.
+===================================== */
+#reportTable thead tr:not(.top-header):not(.top-sub-header):not(.col-number-row):not(.sub-header) th {
+    top: 74px;
+    height: 80px;
+}
+
+#reportTable .sub-header th {
+    top: 154px;
+}
+
+/* =====================================
+   ABSTRACT TABLE (#abstractTable) OVERRIDES
+   Its main header (e.g. "தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு
+   உறுப்பினர்களின் எண்ணிக்கை") wraps to 2 lines in its colspan=4 columns,
+   taller than the 42px the shared 106px/148px offsets budgeted for it —
+   so the sub-header row below was sticking too early and covering the
+   header's second line and the first data row. Same fix as #reportTable:
+   reserve real height for the wrapped header, then push the sub-header
+   down to match.
+===================================== */
+#abstractTable thead tr:not(.top-header):not(.top-sub-header):not(.col-number-row):not(.sub-header) th {
+    height: 80px;
+}
+
+#abstractTable .sub-header th {
+    top: 186px;
 }
 
 /* =====================================
@@ -146,6 +211,15 @@
     background: #f8fafc;
     font-style: italic;
     text-align: left;
+}
+
+/* =====================================
+   GRAND TOTAL ROW (LAST ROW)
+===================================== */
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
 }
 
 /* =====================================
@@ -188,6 +262,49 @@
     font-weight: 600;
 }
 
+.pdf-btn {
+    font-weight: 600;
+}
+
+/* =====================================
+   REASON COLUMNS (NON-SELECTED SOCIETIES)
+===================================== */
+.reason-col {
+    width: 150px;
+    min-width: 150px;
+    max-width: 170px;
+    white-space: normal;
+}
+
+.reason-cell {
+    text-align: center;
+}
+
+.tick {
+    color: #1b8a3a;
+    font-weight: 700;
+}
+
+.cross {
+    color: #b0b0b0;
+    font-weight: 700;
+}
+
+.other-reason-text {
+    display: inline-block;
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+}
+
 .filter-section {
     margin-bottom: 10px;
     display: flex;
@@ -198,4 +315,83 @@
 
 .filter-section select {
     padding: 4px;
+}
+
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+/* =====================================
+   ABSTRACT (DISTRICT/ZONE SUMMARY) TABLE
+   Narrower than the full report — no long
+   name columns, so table-layout can stay
+   auto and the min-width is much smaller.
+===================================== */
+.abstract-table {
+    min-width: 1700px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 90px;
+}
+/* =====================================
+   ALWAYS-VISIBLE SCROLLBAR
+   Windows Automatically hide scroll bars accessibility
+   setting (on by default) makes the native OS scrollbar
+   invisible until hover, so a wide report table can look
+   like it has no way to scroll at all. A custom-styled
+   scrollbar bypasses that OS-level auto-hide and is
+   always rendered.
+===================================== */
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
+}
+
+.narrow-col {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.col-small {
+    width: 60px;
+    min-width: 60px;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
 }

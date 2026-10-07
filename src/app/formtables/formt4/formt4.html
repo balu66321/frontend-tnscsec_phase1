@@ -11,14 +11,14 @@
 
                 <!-- Title -->
                 <tr class="top-header">
-                    <th colspan="14">
-                        வேட்புமனு தாக்கல் பற்றிய விபரங்கள்
+                    <th colspan="15">
+                        செல்லத்தக்க வேட்புமனுக்களில் இருந்து திரும்பப் பெறுதல்
                     </th>
                 </tr>
 
                 <!-- Department -->
                 <tr class="top-sub-header">
-                    <th colspan="14">
+                    <th colspan="15">
                         துறை -- {{ department_name }}
                     </th>
                 </tr>
@@ -30,12 +30,14 @@
                     <th rowspan="3">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
 
                     <th colspan="5">
-                        தேர்தல் அறிவிப்பின்படி வேட்புமனு தாக்கல் நடைபெற வேண்டிய சங்கங்கள் மற்றும் உறுப்பினர்களின்
-                        எண்ணிக்கை </th>
+                        தேர்தல் அறிவிப்பின்படி வேட்புமனு தாக்கல் நடைபெற வேண்டிய சங்கங்கள் மற்றும் தேர்ந்தெடுக்கப்பட
+                        வேண்டிய நிர்வாகக்குழு உறுப்பினர்களின் எண்ணிக்கை </th>
 
                     <th colspan="5">
-                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை </th>
+                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் வேட்பாளர்களின் எண்ணிக்கை </th>
 
+                    <th colspan="2">
+                        வேட்பு மனு தாக்கல் நடைபெறாத சங்கங்களின் பெயர் மற்றும் காரணம் </th>
 
                 </tr>
 
@@ -45,6 +47,9 @@
 
                     <th rowspan="2">சங்கங்கள்</th>
                     <th colspan="4">உறுப்பினர்கள்</th>
+
+                    <th rowspan="2">சங்கத்தின் பெயர்</th>
+                    <th rowspan="2">காரணம்</th>
                 </tr>
 
                 <tr class="sub-header">
@@ -59,21 +64,28 @@
                     <th>மொத்தம்</th>
                 </tr>
 
+                <!-- Column Number Row -->
+                <tr class="col-number-row">
+                    <th class="col-number-cell">1</th>
+                    <th class="col-number-cell">2</th>
+                    <th class="col-number-cell">3</th>
+                    <th class="col-number-cell" colspan="5">4</th>
+                    <th class="col-number-cell" colspan="5">5</th>
+                    <th class="col-number-cell" colspan="2">6</th>
+                </tr>
+
             </thead>
 
             <tbody>
                 <tr *ngIf="tableRows.length === 0">
-                    <td colspan="13" class="empty-table-message">
+                    <td colspan="15" class="empty-table-message">
                         தயவுசெய்து முதலில் படிவம் 4-ஐ பூர்த்தி செய்யவும்.
                     </td>
                 </tr>
 
-
-
-
                 <tr *ngFor="let r of tableRows; let i = index">
 
-                    <td>{{ i + 1 }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ i + 1 }}</td>
 
                     <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
                         {{ r.district_name }}
@@ -91,12 +103,15 @@
                     <td>{{ r.rural_total }}</td>
 
                     <!-- Declared -->
-                    <td class="wrap-col text-left">{{ r.society_name }}</td>
+                    <td class="wrap-col text-left">{{ r.declared_society_name }}</td>
                     <td>{{ r.dec_sc }}</td>
                     <td>{{ r.dec_women }}</td>
                     <td>{{ r.dec_general }}</td>
                     <td>{{ r.dec_total }}</td>
 
+                    <!-- Not filed: name + reason -->
+                    <td class="wrap-col text-left">{{ r.unfiled_society_name }}</td>
+                    <td class="wrap-col text-left">{{ r.unfiled_reason_display }}</td>
 
                 </tr>
 

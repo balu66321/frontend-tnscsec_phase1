@@ -9,12 +9,14 @@
         <h4>{{ selectedSociety?.society_name }}</h4>
 
         <!-- UNOPPOSED MESSAGE -->
-        <div class="annapost-box" *ngIf="selectedSociety?.election_status === 'UNOPPOSED'">
+        <div class="annapost-box" *ngIf="wasInitiallyUnopposed">
             ✔️ இச்சங்கத்தில் <b>அன்னப்போஸ்ட்</b> தேர்தல் நடைபெறுகிறது
         </div>
 
-        <!-- MEMBERS (HIDE CHECKBOX FOR UNOPPOSED) -->
-        <div class="member-grid" *ngIf="selectedSociety?.election_status !== 'UNOPPOSED'">
+        <!-- MEMBERS (HIDE CHECKBOX ONLY IF UNOPPOSED FROM THE START — once
+             shown, keep showing it even if checking boxes simulates the
+             society INTO 'UNOPPOSED', so the actual selections stay usable) -->
+        <div class="member-grid" *ngIf="!wasInitiallyUnopposed">
 
             <div class="member-col" *ngFor="let type of ['sc_st','women','general']">
 
@@ -120,7 +122,7 @@
 
 
     <label class="section-label">
-        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
+        போட்டியிடும் வேட்பாளர் இறுதி பட்டியலின்படி தேர்தலில் போட்டியிடும் சங்கங்கள் மற்றும் வேட்பாளர்கள் விபரம்
     </label>
 
     <div class="table-box">
@@ -133,6 +135,7 @@
                     <th>மகளிர்</th>
                     <th>பொது</th>
                     <th>மொத்தம்</th>
+                    <th>விவரம்</th>
                 </tr>
             </thead>
 
@@ -144,6 +147,11 @@
                     <td>{{ s.declared_women }}</td>
                     <td>{{ s.declared_general }}</td>
                     <td>{{ s.declared_total }}</td>
+                    <td>
+                        <button class="btn-blue" (click)="openViewPopup(s)">
+                            பார்க்க
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -155,7 +163,7 @@
 
     <!-- ================= F4 ================= -->
     <label class="section-label">
-        வேட்புமனு பரிசீலனையின் போது தள்ளுபடி / நிறுத்தல்
+        செல்லத்தக்க வேட்புமனுக்களில் இருந்து திரும்பப் பெறுதல்
     </label>
 
     <div class="table-box">
@@ -201,10 +209,43 @@
         </table>
     </div>
 
+    <!-- ================= WITHDRAWN COUNT (CATEGORY-WISE) ================= -->
+    <label class="section-label">
+        செல்லத்தக்க வேட்பு மனுக்கள் பட்டியல்படி வேட்பு மனுவை திரும்பப் பெற்ற வேட்பாளர்களின் எண்ணிக்கை
+    </label>
+
+    <div class="table-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>வ.எண்</th>
+                    <th>சங்கத்தின் பெயர்</th>
+                    <th>ப.தி./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="!processedSocieties.length">
+                    <td colspan="6" class="empty-box">இதுவரை எந்த வேட்புமனுவும் திரும்பப் பெறப்படவில்லை</td>
+                </tr>
+                <tr *ngFor="let s of processedSocieties; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ s.society_name }}</td>
+                    <td>{{ getWithdrawnCount(s, 'sc_st') }}</td>
+                    <td>{{ getWithdrawnCount(s, 'women') }}</td>
+                    <td>{{ getWithdrawnCount(s, 'general') }}</td>
+                    <td>{{ getWithdrawnTotal(s) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <!-- ================= F5 ================= -->
     <label class="section-label">
-        இறுதி வேட்பாளர் பட்டியலின்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க
-        வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு சமமாக இருந்து தேர்தலில் போட்டியில்லாத சங்கங்கள் </label>
+        போட்டியிடும் இறுதி வேட்பாளர்கள் எண்ணிக்கையும் மற்றும் நிர்வாகக் குழு உறுப்பினர்கள் எண்ணிக்கையும் சமமாக
+        இருப்பதால் தேர்தலில் போட்டியில்லாத சங்கங்கள் விபரம் </label>
 
     <div class="table-box" *ngIf="f5List.length; else f5Empty">
         <table>
@@ -226,7 +267,7 @@
                     <td>{{ s.sc_st }}</td>
                     <td>{{ s.women }}</td>
                     <td>{{ s.general }}</td>
-                    <td>{{ s.final_counts?.total || s.total }}</td>
+                    <td>{{ s.total }}</td>
                     <td>
                         <button class="btn-blue" (click)="openViewPopup(s)">
                             பார்க்க
@@ -245,8 +286,8 @@
     <!-- ================= F6 ================= -->
     <label class="section-label">
 
-        இறுதி வேட்பாளர் பட்டியலின்படி போட்டியிடும் வேட்பாளர்களின் எண்ணிக்கையானது நிர்வாகக் குழுவிற்கு தேர்ந்தெடுக்க
-        வேண்டிய உறுப்பினர்களின் எண்ணிக்கைக்கு குறைவாக இருந்து தேர்தலில் போட்டியில்லாத சங்கங்கள் </label>
+        போட்டியிடும் இறுதி வேட்பாளர்கள் எண்ணிக்கை நிர்வாகக் குழு உறுப்பினர்கள் எண்ணிக்கையைவிட குறைவாக இருப்பதால்
+        தேர்தல் இல்லாத சங்கங்கள் விபரம் </label>
 
     <div class="table-box" *ngIf="f6List.length; else f6Empty">
         <table>
@@ -268,7 +309,7 @@
                     <td>{{ s.sc_st }}</td>
                     <td>{{ s.women }}</td>
                     <td>{{ s.general }}</td>
-                    <td>{{ s.final_counts?.total || s.total }}</td>
+                    <td>{{ s.total }}</td>
                     <td>
                         <button class="btn-blue" (click)="openViewPopup(s)">
                             பார்க்க
@@ -285,7 +326,7 @@
 
     <!-- ================= F7 ================= -->
     <label class="section-label">
-        செல்லத்தக்க வேட்புமனுக்கள் பட்டியலின்படி போட்டியிடக்கூடிய சங்கங்களின் நிர்வாகக் குழு உறுப்பினர்கள் எண்ணிக்கை
+        இறுதி வேட்பாளர் பட்டியல்படி வாக்குப்பதிவு நடைபெற வேண்டிய சங்கங்கள் விபரம்
     </label>
 
     <div class="table-box" *ngIf="f7List.length; else f7Empty">
@@ -308,7 +349,7 @@
                     <td>{{ s.sc_st }}</td>
                     <td>{{ s.women }}</td>
                     <td>{{ s.general }}</td>
-                    <td>{{ s.final_counts?.total || s.total }}</td>
+                    <td>{{ s.total }}</td>
                     <td>
                         <button class="btn-blue" (click)="openViewPopup(s)">
                             பார்க்க
@@ -325,39 +366,6 @@
 
 
     <!-- ================= VIEW POPUP (LAST) ================= -->
-    <!-- ================= REJECT POPUP ================= -->
-    <div class="modal-backdrop" *ngIf="showRejectPopup">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>தகுதி மறுத்தல்</h3>
-                <button class="close-btn" (click)="closeReject()">×</button>
-            </div>
-
-            <h4>{{ selectedSociety?.society_name }}</h4>
-
-            <div class="annapost-box" *ngIf="selectedSociety?.election_status === 'UNOPPOSED'">
-                ✔️ இச்சங்கத்தில் <b>அன்னப்போஸ்ட்</b> தேர்தல் நடைபெறுகிறது
-            </div>
-
-            <div class="member-grid" *ngIf="selectedSociety?.election_status !== 'UNOPPOSED'">
-                <div class="member-col" *ngFor="let type of ['sc_st','women','general']">
-                    <h5>
-                        {{ type === 'sc_st' ? 'ப.தி./ப.கு' : type === 'women' ? 'மகளிர்' : 'பொது' }}
-                    </h5>
-
-                    <div class="member-item" *ngFor="let m of getMembers(type)">
-                        <span>{{ m.member_name }}</span>
-                        <input type="checkbox" [(ngModel)]="m.checked" (change)="onCheckboxChange()" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn-grey" (click)="closeReject()">ரத்து செய்</button>
-                <button class="btn-blue" (click)="finalWithdraw()">சமர்ப்பிக்க</button>
-            </div>
-        </div>
-    </div>
 
     <!-- ================= STOP POPUP ================= -->
     <div class="modal-backdrop" *ngIf="showStopPopup">

@@ -1,9 +1,8 @@
 <div class="page-bg">
 
-
     <h2 class="form">படிவம் 10</h2>
     <h2 class="form-title">
-        வாக்கு எண்ணிக்கை பற்றிய விபரங்கள்
+        துணைத் தலைவர் தேர்தல் விவரம்
     </h2>
 
     <div class="row">
@@ -19,18 +18,20 @@
             <input class="input-box" [value]="zone_name" readonly>
         </div>
     </div>
-    <label>தலைவர் தேர்தலுக்கு தாக்கல் செய்யப்பட்ட வேட்பு மனுக்கள்/உறுப்பினர்கள்
 
+    <!-- ================================================= -->
+    <!-- F3 — VIEW ONLY -->
+    <!-- ================================================= -->
+
+    <label class="table-label">
+        துணைத் தலைவர் பதவிக்கு தாக்கல் செய்யப்பட்ட வேட்பாளர்களின் பெயர்கள் - பார்வை
     </label>
+
     <table class="form-table">
         <thead>
             <tr>
                 <th>வ. எண்</th>
                 <th>சங்கத்தின் பெயர்</th>
-                <th>ப.இ./ப.கு</th>
-                <th>மகளிர்</th>
-                <th>பொது</th>
-                <th>மொத்தம்</th>
                 <th>செயல்</th>
             </tr>
         </thead>
@@ -39,41 +40,91 @@
             <tr *ngFor="let row of f3List; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ row.society_name }}</td>
-                <td>{{ row.sc_st }}</td>
-                <td>{{ row.women }}</td>
-                <td>{{ row.general }}</td>
-                <td>{{ row.total }}</td>
                 <td>
-                    <!-- <button class="add-btn" [disabled]="row.submitted" (click)="addSociety(row)">
-                        {{ row.submitted ? 'சமர்ப்பிக்கப்பட்டது' : 'தேர்வு செய்க' }}
-                    </button> -->
-                    <button class="add-btn" (click)="addSociety(row, 'REJECT')">
-                        தேர்வு செய்க
+                    <button class="add-btn" (click)="viewSocietyDetails(row)">
+                        பார்க்க
                     </button>
-
-
                 </td>
             </tr>
         </tbody>
     </table>
 
+    <!-- ================================================= -->
+    <!-- FIRST SELECTION — REJECT / CONTINUE DECISION -->
+    <!-- ================================================= -->
 
-    <!-- F4 TABLE -->
-    <label>பரிசீலனையில் நிராகரிக்கப்பட்ட வேட்பு மனுக்கள்/உறுப்பினர்கள் </label>
+    <label class="table-label">
+        பரிசீலனையில் நிராகரிக்க வேண்டிய வேட்பு மனுக்கள்/உறுப்பினர்களைத் தேர்வு செய்க
+    </label>
+
+    <table class="form-table">
+        <thead>
+            <tr>
+                <th>வ. எண்</th>
+                <th>சங்கத்தின் பெயர்</th>
+                <th>செயல்</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let row of firstSelectionList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.society_name }}</td>
+                <td>
+                    <button class="add-btn" (click)="addSociety(row, 'REJECT')">
+                        தேர்வு செய்க
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ================================================= -->
+    <!-- REJECTED SOCIETIES — VIEW ONLY -->
+    <!-- ================================================= -->
+
+    <label class="table-label">
+        பரிசீலனையில் நிராகரிக்கப்பட்ட வேட்பு மனுக்கள்/உறுப்பினர்கள் - பெயர்கள்
+    </label>
+
+    <table class="form-table">
+        <thead>
+            <tr>
+                <th>வ. எண்</th>
+                <th>சங்கத்தின் பெயர்</th>
+                <th>செயல்</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let row of rejectedSocietiesList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.society_name }}</td>
+                <td>
+                    <button class="add-btn" (click)="viewSocietyDetails(row)">
+                        பார்க்க
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ================================================= -->
+    <!-- TABLE 4 — WITHDRAW SELECTION -->
+    <!-- ================================================= -->
+
+    <label class="table-label">
+        திரும்பப் பெற வேண்டிய வேட்பு மனுக்கள்/உறுப்பினர்களைத் தேர்வு செய்க
+    </label>
+
     <div *ngIf="showF4Table">
-
-        <!-- <label>பரிசீலனையில் நிராகரிக்கப்பட்ட வேட்பு மனுக்கள்/உறுப்பினர்கள் (F4)</label> -->
 
         <table class="form-table">
             <thead>
                 <tr>
                     <th>வ. எண்</th>
                     <th>சங்கத்தின் பெயர்</th>
-                    <th>ப.இ./ப.கு</th>
-                    <th>மகளிர்</th>
-                    <th>பொது</th>
-                    <th>மொத்தம்</th>
-                    <th>நிலை</th>
+                    <th>செயல்</th>
                 </tr>
             </thead>
 
@@ -81,41 +132,63 @@
                 <tr *ngFor="let row of f4List; let i = index">
                     <td>{{ i + 1 }}</td>
                     <td>{{ row.society_name }}</td>
-                    <td>{{ row.sc_st }}</td>
-                    <td>{{ row.women }}</td>
-                    <td>{{ row.general }}</td>
-                    <td>{{ row.total }}</td>
                     <td>
-                        <!-- <button class="add-btn" (click)="addSociety(row)">
-                            தேர்வு செய்க
-                        </button> -->
                         <button class="add-btn" (click)="addSociety(row, 'WITHDRAW')">
                             தேர்வு செய்க
                         </button>
-
-
                     </td>
                 </tr>
             </tbody>
         </table>
 
     </div>
-    <!-- F5 TABLE -->
-    <div *ngIf="showF5Table">
 
-        <label>தலைவர் பதவிக்கு தகுதியான இறுதி வேட்பாளர் பட்டியல் (Select one user for president)
-        </label>
+    <!-- ================================================= -->
+    <!-- TABLE 5 — WITHDRAWN SOCIETIES, VIEW ONLY -->
+    <!-- ================================================= -->
+
+    <label class="table-label">
+        திரும்பப் பெறப்பட்ட வேட்பு மனுக்கள்/உறுப்பினர்கள் - பெயர்கள்
+    </label>
+
+    <table class="form-table">
+        <thead>
+            <tr>
+                <th>வ. எண்</th>
+                <th>சங்கத்தின் பெயர்</th>
+                <th>செயல்</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let row of f4WithdrawnList; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.society_name }}</td>
+                <td>
+                    <button class="add-btn" (click)="viewSocietyDetails(row)">
+                        பார்க்க
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ================================================= -->
+    <!-- TABLE 6 — FINAL VICE PRESIDENT SELECTION (POLL) -->
+    <!-- ================================================= -->
+
+    <label class="table-label">
+        துணைத் தலைவர் பதவிக்கு தகுதியான இறுதி வேட்பாளர் பட்டியல்
+    </label>
+
+    <div *ngIf="showF5Table">
 
         <table class="form-table">
             <thead>
                 <tr>
                     <th>வ. எண்</th>
                     <th>சங்கத்தின் பெயர்</th>
-                    <th>ப.இ./ப.கு</th>
-                    <th>மகளிர்</th>
-                    <th>பொது</th>
-                    <th>மொத்தம்</th>
-                    <th>நிலை</th> <!-- Added column -->
+                    <th>செயல்</th>
                 </tr>
             </thead>
 
@@ -123,40 +196,50 @@
                 <tr *ngFor="let row of f5List; let i = index">
                     <td>{{ i + 1 }}</td>
                     <td>{{ row.society_name }}</td>
-                    <td>{{ row.sc_st }}</td>
-                    <td>{{ row.women }}</td>
-                    <td>{{ row.general }}</td>
-                    <td>{{ row.total }}</td>
-
-                    <!-- Candidate names -->
-                    <!-- <td>
-                        <div *ngFor="let c of row.candidates">
-                            {{ c.member_name }}
-                        </div>
-                    </td> -->
-
-                    <!-- Next action button -->
                     <td>
                         <button class="add-btn" [disabled]="row.submitted" (click)="addSociety(row, 'FINALIZE')">
-
                             {{ row.submitted ? 'சமர்ப்பிக்கப்பட்டது' : 'தேர்வு செய்க' }}
                         </button>
-
-
                     </td>
                 </tr>
-
             </tbody>
         </table>
 
     </div>
 
+    <!-- ================================================= -->
+    <!-- TABLE 7 — FINALIZED RESULTS (Vice President / Election type) -->
+    <!-- ================================================= -->
 
+    <div *ngIf="finalizedResultsList.length">
 
+        <label class="table-label">
+            இறுதி தேர்தல் முடிவுகள் (துணைத் தலைவர் மற்றும் தேர்தல் முறை)
+        </label>
 
+        <table class="form-table">
 
+            <thead>
+                <tr>
+                    <th>வ. எண்</th>
+                    <th>சங்கத்தின் பெயர்</th>
+                    <th>துணைத் தலைவர் பெயர்</th>
+                    <th>தேர்தல் முறை</th>
+                </tr>
+            </thead>
 
+            <tbody>
+                <tr *ngFor="let row of finalizedResultsList; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ row.society_name }}</td>
+                    <td>{{ row.vice_president_name }}</td>
+                    <td>{{ row.election_type }}</td>
+                </tr>
+            </tbody>
 
+        </table>
+
+    </div>
 
     <div class="form-footer">
         <button class="cancel-btn" (click)="goBack()">ரத்து செய்</button>
@@ -166,19 +249,6 @@
         </button>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- MODAL -->
     <!-- MODAL -->
     <div class="modal-backdrop" *ngIf="showModal">
         <div class="modal-box">
@@ -188,75 +258,54 @@
             <h3>{{ selectedSociety?.society_name }}</h3>
 
             <!-- ============================= -->
-            <!-- F3 / F4 → Multiple selection -->
+            <!-- TABLE 2 → REJECT — Multiple selection -->
+            <!-- Checked = continue, Unchecked = reject -->
             <!-- ============================= -->
-            <div *ngIf="currentAction !== 'FINALIZE'">
+            <div *ngIf="currentAction === 'REJECT'">
 
-                <div *ngIf="scstCandidates.length">
-                    <h4>ப.இ./ப.கு ({{ selectedSociety.sc_st }})</h4>
-                    <label *ngFor="let c of scstCandidates">
-                        <input type="checkbox" [(ngModel)]="c.is_elected">
-                        {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
-                    </label>
-                </div>
+                <p class="modal-hint">
+                    தொடர வேண்டிய உறுப்பினர்களைத் தேர்வு செய்க. தேர்வு செய்யப்படாதவர்கள் நிராகரிக்கப்படுவார்கள்.
+                </p>
 
-                <div *ngIf="womenCandidates.length">
-                    <h4>மகளிர் ({{ selectedSociety.women }})</h4>
-                    <label *ngFor="let c of womenCandidates">
-                        <input type="checkbox" [(ngModel)]="c.is_elected">
-                        {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
-                    </label>
-                </div>
-
-                <div *ngIf="generalCandidates.length">
-                    <h4>பொது ({{ selectedSociety.general }})</h4>
-                    <label *ngFor="let c of generalCandidates">
-                        <input type="checkbox" [(ngModel)]="c.is_elected">
-                        {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
-                    </label>
-                </div>
+                <label *ngFor="let c of candidates">
+                    <input type="checkbox" [(ngModel)]="c.is_elected">
+                    {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
+                </label>
 
             </div>
 
             <!-- ============================= -->
-            <!-- F5 → FINALIZE (Single select) -->
+            <!-- TABLE 4 → WITHDRAW — Multiple selection -->
+            <!-- Checked = continue, Unchecked = withdrawn -->
+            <!-- ============================= -->
+            <div *ngIf="currentAction === 'WITHDRAW'">
+
+                <p class="modal-hint">
+                    தொடர வேண்டிய உறுப்பினர்களைத் தேர்வு செய்க. தேர்வு செய்யப்படாதவர்கள் திரும்பப் பெறப்படுவார்கள்.
+                </p>
+
+                <label *ngFor="let c of candidates">
+                    <input type="checkbox" [(ngModel)]="c.is_elected">
+                    {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
+                </label>
+
+            </div>
+
+            <!-- ============================= -->
+            <!-- TABLE 6 → FINALIZE — Single select, POLL -->
             <!-- ============================= -->
             <div *ngIf="currentAction === 'FINALIZE'">
 
-                <!-- VICE PRESIDENT ONLY -->
                 <h4>Vice President Selection</h4>
 
-                <!-- <label *ngFor="let c of candidates">
-                    <input type="checkbox" name="vicePresident" [value]="c.form5_member_id"
-                        [(ngModel)]="selectedVicePresidentId">
-                    {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
-                </label> -->
-
-
-
                 <label *ngFor="let c of candidates">
-                    <input type="radio" name="vicePresident" [value]="c.form5_member_id"
-                        [(ngModel)]="selectedVicePresidentId">
-
+                    <input type="checkbox" [checked]="c.form5_member_id === selectedVicePresidentId"
+                        (change)="selectVicePresident(c)">
                     {{ c.member_name }} - {{ maskAadhar(c.aadhar_no) }}
-                </label>
-
-                <hr>
-
-                <!-- Election Type -->
-                <h4>Election Type</h4>
-
-                <label>
-                    <input type="radio" name="electionType" [(ngModel)]="electionType" value="UNOPPOSED">
-                    UNOPPOSED
-                </label>
-
-                <label>
-                    <input type="radio" name="electionType" [(ngModel)]="electionType" value="POLL">
-                    POLL
                 </label>
 
             </div>
+
             <!-- ============================= -->
             <!-- Footer -->
             <!-- ============================= -->
@@ -266,4 +315,45 @@
             </div>
 
         </div>
+
     </div>
+
+    <!-- ================================================= -->
+    <!-- VIEW ONLY MODAL -->
+    <!-- ================================================= -->
+
+    <div class="modal-backdrop" *ngIf="showViewModal">
+
+        <div class="modal-box view-only-modal">
+
+            <!-- Only Close X -->
+            <button class="close-btn" (click)="closeViewModal()">
+                ✕
+            </button>
+
+            <h3>
+                {{ viewSociety?.society_name }}
+            </h3>
+
+            <!-- ALL CANDIDATES — flat list, category shown inline -->
+            <div *ngIf="viewCandidates.length">
+
+                <h4>
+                    உறுப்பினர்கள் ({{ viewCandidates.length }})
+                </h4>
+
+                <div class="view-member" *ngFor="let c of viewCandidates">
+
+                    {{ c.member_name }}
+                    -
+                    {{ maskAadhar(c.aadhar_no) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

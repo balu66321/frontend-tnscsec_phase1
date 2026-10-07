@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 interface Society {
   society_id: number;
   society_name: string;
+  voter_list_prepared_count?: number | null;
 }
 
 interface Form2ApiRow {
@@ -24,6 +25,7 @@ interface Form2ApiRow {
   selected_soc: Society[];
   non_selected_soc: Society[];
 
+  selected_count: number;
   non_selected_count: number;
   remark: string;
 }
@@ -35,10 +37,16 @@ interface TableRow {
   f3_name: string | null;
   f5_name: string | null;
   f6_name: string | null;
+  voter_list_prepared_count: number | null;
 
+  selected_count?: number;
   non_selected_count?: number;
   remark?: string;
   rowSpan?: number;
+
+  f3_count?: number;
+  f5_count?: number;
+  f6_count?: number;
 }
 
 
@@ -102,25 +110,34 @@ export class Formt2 implements OnInit {
 
     data.forEach(row => {
 
-      const f3List = row.masterzone_societies.map(s => s.society_name);
-      const f5List = row.selected_soc.map(s => s.society_name);
-      const f6List = row.non_selected_soc.map(s => s.society_name);
+      // society_id -> whichever count was entered for it (selected or non-selected side)
+      const countMap = new Map<number, number | null>();
+      row.selected_soc.forEach(s => countMap.set(s.society_id, s.voter_list_prepared_count ?? null));
+      row.non_selected_soc.forEach(s => countMap.set(s.society_id, s.voter_list_prepared_count ?? null));
 
-      const totalRows = f3List.length;
+      const f5Ids = new Set(row.selected_soc.map(s => s.society_id));
+      const f6Ids = new Set(row.non_selected_soc.map(s => s.society_id));
 
-      f3List.forEach((society, index) => {
+      const totalRows = row.masterzone_societies.length;
+
+      row.masterzone_societies.forEach((society, index) => {
 
         this.tableRows.push({
           district_name: row.district_name,
           zone_name: row.zone_name,
 
-          f3_name: society,
-          f5_name: f5List.includes(society) ? society : null,
-          f6_name: f6List.includes(society) ? society : null,
+          f3_name: society.society_name,
+          f5_name: f5Ids.has(society.society_id) ? society.society_name : null,
+          f6_name: f6Ids.has(society.society_id) ? society.society_name : null,
+          voter_list_prepared_count: countMap.get(society.society_id) ?? null,
 
+          selected_count: index === 0 ? row.selected_count : undefined,
           non_selected_count: index === 0 ? row.non_selected_count : undefined,
           remark: index === 0 ? row.remark : undefined,
-          rowSpan: index === 0 ? totalRows : undefined
+          rowSpan: index === 0 ? totalRows : undefined,
+          f3_count: row.masterzone_societies.length,
+          f5_count: row.selected_soc.length,
+          f6_count: row.non_selected_soc.length
         });
 
       });

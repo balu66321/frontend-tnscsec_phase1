@@ -75,6 +75,14 @@
     z-index: 36;
 }
 
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+}
+
 /* Remove red column */
 .danger-text {
     background: transparent;

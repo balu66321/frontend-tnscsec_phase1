@@ -10,22 +10,46 @@ interface TableRow {
   zone_name: string;
   society_name: string;
 
-
-
-
-
   rural_sc: number;
   rural_women: number;
   rural_general: number;
   rural_total: number;
 
-  dec_sc: number;
-  dec_women: number;
-  dec_general: number;
-  dec_total: number;
+  // Only meaningful when the society was actually filed with declared
+  // candidates (not stopped, not zero) — '-' otherwise, but the row itself
+  // still exists so it stays visible in the "required societies" columns.
+  declared_society_name: string;
+  dec_sc: number | string;
+  dec_women: number | string;
+  dec_general: number | string;
+  dec_total: number | string;
 
   rejected: string;
+
+  // Only meaningful for a not-filed society's row — blank otherwise
+  unfiled_society_name: string;
+  unfiled_reason_display: string;
+
   rowSpan?: number;
+  districtSerial?: number;
+}
+
+// One row per district+zone group with everything summed —
+// no per-society names, counts only.
+interface AbstractRow {
+  district_name: string;
+  zone_name: string;
+  requiredCount: number;
+  ruralScTotal: number;
+  ruralWomenTotal: number;
+  ruralGeneralTotal: number;
+  ruralTotalTotal: number;
+  filedCount: number;
+  decScTotal: number;
+  decWomenTotal: number;
+  decGeneralTotal: number;
+  decTotalTotal: number;
+  unfiledCount: number;
 }
 
 @Component({
@@ -38,6 +62,25 @@ interface TableRow {
 export class Table4 implements OnInit {
 
   tableRows: TableRow[] = [];
+  abstractRows: AbstractRow[] = [];
+  viewMode: 'full' | 'abstract' = 'full';
+
+  grandTotal: AbstractRow = {
+    district_name: '',
+    zone_name: '',
+    requiredCount: 0,
+    ruralScTotal: 0,
+    ruralWomenTotal: 0,
+    ruralGeneralTotal: 0,
+    ruralTotalTotal: 0,
+    filedCount: 0,
+    decScTotal: 0,
+    decWomenTotal: 0,
+    decGeneralTotal: 0,
+    decTotalTotal: 0,
+    unfiledCount: 0
+  };
+
   department_name = '';
   selectedDepartment = '';
   selectedDistrict = '';
@@ -45,7 +88,28 @@ export class Table4 implements OnInit {
   departmentList: any[] = [];
   districtList: any[] = [];
 
+  readonly reasonOptions = [
+    { value: 'legal_order', label: 'சட்ட ஒழுங்கு' },
+    { value: 'natural_disaster', label: 'இயற்கை பேரிடர்' },
+    { value: 'court_injunction', label: 'நீதிமன்ற தடையாணை' },
+    { value: 'election_cancelled_by_commission', label: 'ஆணையத்தால் தேர்தல் ரத்து' },
+    { value: 'insufficient_candidates', label: 'சிற்றெண் குறைவு' },
+    { value: 'other', label: 'இதர காரணங்கள்' }
+  ];
+
   constructor(private userService: UserService) { }
+
+  private resolveReason(soc: any): string {
+
+    if (!soc.reason) return '-';
+
+    const opt = this.reasonOptions.find(r => r.value === soc.reason);
+    const label = opt?.label || soc.reason;
+
+    return soc.reason === 'other' && soc.other_reason_text
+      ? `${label} - ${soc.other_reason_text}`
+      : label;
+  }
 
   ngOnInit(): void {
 
@@ -98,11 +162,25 @@ export class Table4 implements OnInit {
 
     const rows: TableRow[] = [];
 
+    let districtSerial = 0;
+
     data.forEach((item: any) => {
 
+      districtSerial += 1;
+
+      // Row identity/count always covers every society (filed or not) —
+      // that's what drives the "required societies" columns. Whether the
+      // "declared/filed" columns show anything for a given row is decided
+      // separately below, so a stopped or zero-candidate filed society
+      // still appears with its required-society data, just blank there.
+      const hasDeclaredCandidates = (s: any) => {
+        const d = s.declared_counts || {};
+        return (Number(d.sc_st) || 0) + (Number(d.women) || 0) + (Number(d.general) || 0) > 0;
+      };
+
       const societies = [
-        ...(item.filed_societies || []),
-        ...(item.unfiled_societies || [])
+        ...(item.filed_societies || []).map((s: any) => ({ ...s, _isFiled: true })),
+        ...(item.unfiled_societies || []).map((s: any) => ({ ...s, _isFiled: false }))
       ];
 
       const span = societies.length || 1;
@@ -111,6 +189,9 @@ export class Table4 implements OnInit {
 
         const rural = soc.rural_counts || {};
         const declared = soc.declared_counts || {};
+
+        const showDeclared =
+          soc._isFiled && soc.is_stopped !== true && hasDeclaredCandidates(soc);
 
         rows.push({
 
@@ -127,10 +208,11 @@ export class Table4 implements OnInit {
           rural_total: rural.total || 0,
 
           // Declared Counts
-          dec_sc: declared.sc_st || 0,
-          dec_women: declared.women || 0,
-          dec_general: declared.general || 0,
-          dec_total: declared.total || 0,
+          declared_society_name: showDeclared ? (soc.society_name || '-') : '-',
+          dec_sc: showDeclared ? (declared.sc_st || 0) : '-',
+          dec_women: showDeclared ? (declared.women || 0) : '-',
+          dec_general: showDeclared ? (declared.general || 0) : '-',
+          dec_total: showDeclared ? (declared.total || 0) : '-',
 
           // Unqualified Society
           rejected:
@@ -138,7 +220,11 @@ export class Table4 implements OnInit {
               ? soc.society_name
               : '-',
 
-          rowSpan: index === 0 ? span : 0
+          unfiled_society_name: soc._isFiled ? '-' : (soc.society_name || '-'),
+          unfiled_reason_display: soc._isFiled ? '-' : this.resolveReason(soc),
+
+          rowSpan: index === 0 ? span : 0,
+          districtSerial: index === 0 ? districtSerial : undefined
 
         });
 
@@ -160,12 +246,18 @@ export class Table4 implements OnInit {
           rural_general: 0,
           rural_total: 0,
 
-          dec_sc: 0,
-          dec_women: 0,
-          dec_general: 0,
-          dec_total: 0,
+          districtSerial: districtSerial,
+
+          declared_society_name: '-',
+          dec_sc: '-',
+          dec_women: '-',
+          dec_general: '-',
+          dec_total: '-',
 
           rejected: '-',
+
+          unfiled_society_name: '-',
+          unfiled_reason_display: '-',
 
           rowSpan: 1
 
@@ -178,6 +270,106 @@ export class Table4 implements OnInit {
     this.tableRows = rows;
 
     console.log('FORM4 TABLE ROWS:', this.tableRows);
+
+    this.buildAbstractRows();
+  }
+
+  /* =========================
+     ABSTRACT (DISTRICT/ZONE-WISE SUMMARY)
+  ========================= */
+  private buildAbstractRows(): void {
+
+    const groups = new Map<string, AbstractRow>();
+
+    this.tableRows.forEach(r => {
+
+      const key = `${r.district_name}||${r.zone_name}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          district_name: r.district_name,
+          zone_name: r.zone_name,
+          requiredCount: 0,
+          ruralScTotal: 0,
+          ruralWomenTotal: 0,
+          ruralGeneralTotal: 0,
+          ruralTotalTotal: 0,
+          filedCount: 0,
+          decScTotal: 0,
+          decWomenTotal: 0,
+          decGeneralTotal: 0,
+          decTotalTotal: 0,
+          unfiledCount: 0
+        });
+      }
+
+      const g = groups.get(key)!;
+
+      g.requiredCount += 1;
+      g.ruralScTotal += r.rural_sc || 0;
+      g.ruralWomenTotal += r.rural_women || 0;
+      g.ruralGeneralTotal += r.rural_general || 0;
+      g.ruralTotalTotal += r.rural_total || 0;
+
+      const showDeclared = r.declared_society_name !== '-';
+      if (showDeclared) {
+        g.filedCount += 1;
+        g.decScTotal += Number(r.dec_sc) || 0;
+        g.decWomenTotal += Number(r.dec_women) || 0;
+        g.decGeneralTotal += Number(r.dec_general) || 0;
+        g.decTotalTotal += Number(r.dec_total) || 0;
+      }
+
+      if (r.unfiled_society_name !== '-') {
+        g.unfiledCount += 1;
+      }
+
+    });
+
+    this.abstractRows = Array.from(groups.values());
+
+    this.computeGrandTotal();
+  }
+
+  // Sum of every district's abstract totals — reflects whatever
+  // Department/District filter produced the current tableRows.
+  private computeGrandTotal(): void {
+
+    const totals: AbstractRow = {
+      district_name: '',
+      zone_name: '',
+      requiredCount: 0,
+      ruralScTotal: 0,
+      ruralWomenTotal: 0,
+      ruralGeneralTotal: 0,
+      ruralTotalTotal: 0,
+      filedCount: 0,
+      decScTotal: 0,
+      decWomenTotal: 0,
+      decGeneralTotal: 0,
+      decTotalTotal: 0,
+      unfiledCount: 0
+    };
+
+    this.abstractRows.forEach(g => {
+      totals.requiredCount += g.requiredCount;
+      totals.ruralScTotal += g.ruralScTotal;
+      totals.ruralWomenTotal += g.ruralWomenTotal;
+      totals.ruralGeneralTotal += g.ruralGeneralTotal;
+      totals.ruralTotalTotal += g.ruralTotalTotal;
+      totals.filedCount += g.filedCount;
+      totals.decScTotal += g.decScTotal;
+      totals.decWomenTotal += g.decWomenTotal;
+      totals.decGeneralTotal += g.decGeneralTotal;
+      totals.decTotalTotal += g.decTotalTotal;
+      totals.unfiledCount += g.unfiledCount;
+    });
+
+    this.grandTotal = totals;
+  }
+
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'full' ? 'abstract' : 'full';
   }
 
 
@@ -238,6 +430,8 @@ export class Table4 implements OnInit {
           console.log('NO DATA RETURNED');
 
           this.tableRows = [];
+          this.abstractRows = [];
+          this.computeGrandTotal();
 
         }
 
@@ -254,6 +448,22 @@ export class Table4 implements OnInit {
 
     console.log('Department ID:', departmentId);
     console.log('District ID:', districtId);
+
+    if (this.viewMode === 'abstract') {
+
+      this.userService.getForm4AbstractPdf(departmentId, districtId).subscribe(
+        (res: Blob) => {
+          saveAs(
+            new Blob([res], { type: 'application/pdf' }),
+            'Form4_Abstract_Report.pdf'
+          );
+        },
+        error => {
+          console.error('Abstract PDF download error:', error);
+        }
+      );
+      return;
+    }
 
     this.userService.getForm4Pdf(departmentId, districtId).subscribe(
       (res: Blob) => {

@@ -196,6 +196,73 @@
 }
 
 /* ==========================================
+   NOT-FILED SOCIETIES + REASON DROPDOWN
+========================================== */
+.unselected-box {
+    background: #e9ad5e;
+    padding: 10px 18px;
+    border-radius: 6px;
+    margin-top: 10px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.unselected-item {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.unselected-reason-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.unselected-name {
+    flex: 1 1 220px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.reason-dropdown {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    min-width: 220px;
+}
+
+.other-reason-box {
+    flex: 1 1 100%;
+    width: 100%;
+    min-height: 70px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.unselected-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.unselected-box::-webkit-scrollbar-thumb {
+    background: #7b7e7d;
+    border-radius: 6px;
+}
+
+/* ==========================================
    EMPTY BOX
 ========================================== */
 .empty-text {

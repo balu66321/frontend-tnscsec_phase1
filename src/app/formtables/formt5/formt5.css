@@ -13,6 +13,14 @@
 }
 
 
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+}
+
 .empty-table-message {
     text-align: center;
     padding: 20px;
@@ -38,7 +46,7 @@
     border: 1px solid #4d7c0f;
     padding: 6px;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 .top-header th {
@@ -66,6 +74,18 @@
 
 .text-left {
     text-align: left;
+}
+
+.wrap-col {
+    width: 260px;
+    min-width: 220px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.mid-header th {
+    background: #61b9c0;
+    color: #fff;
 }
 
 .export-btn {

@@ -123,6 +123,9 @@ export class Login {
 
   login() {
 
+    console.log("Username:", this.username);
+    console.log("Password:", this.password);
+
     // TEST
     // alert('Login button clicked');
 

@@ -1,21 +1,34 @@
 <div class="forms-container">
-    <table class="forms-table">
+    <div class="forms-inner">
 
-        <tr *ngFor="let f of formsList">
+        <div class="election-programme-bar">
+            <a [routerLink]="['/layout/electionschedule']">
+                தேர்தல் அட்டவணை (Election Schedule)
+            </a>
+            <!-- <a [routerLink]="['/layout/electionprogramme']">
+            தேர்தல் திட்ட அறிவிப்பு (Election Programme)
+        </a> -->s
+        </div>
 
-            <!-- Form Name (NOT clickable) -->
-            <td class="title">
-                {{ f.title }}
-            </td>
+        <table class="forms-table">
 
-            <!-- Arrow Click → Table Page -->
-            <td class="link">
-                <a [routerLink]="f.tableLink" class="arrow-link">
-                    →
-                </a>
-            </td>
+            <tr *ngFor="let f of formsList">
 
-        </tr>
+                <!-- Form Name (NOT clickable) -->
+                <td class="title">
+                    {{ f.title }}
+                </td>
 
-    </table>
+                <!-- Arrow Click → Table Page -->
+                <td class="link">
+                    <a [routerLink]="f.tableLink" class="arrow-link">
+                        →
+                    </a>
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
 </div>

@@ -1,139 +1,202 @@
-<div class="page-content">
+<div class="table-actions">
 
-    <div class="table-actions">
+    <div class="filter-section">
 
-        <div class="filter-section">
-
+        <div class="filter-item">
             <label>Department:</label>
-
             <select [(ngModel)]="selectedDepartment" (change)="applyFilter()">
-
                 <option value="">All</option>
-
                 <option *ngFor="let d of departmentList" [value]="d.name">
-
-                    {{d.name}}
-
+                    {{ d.name }}
                 </option>
-
             </select>
-
-            <label>District:</label>
-
-            <select [(ngModel)]="selectedDistrict" (change)="applyFilter()">
-
-                <option value="">All</option>
-
-                <option *ngFor="let d of districtList" [value]="d.name">
-
-                    {{d.name}}
-
-                </option>
-
-            </select>
-
         </div>
 
-        <button class="export-btn" (click)="downloadPdf()">
-
-            📄 Download PDF
-
-        </button>
+        <div class="filter-item">
+            <label>District:</label>
+            <select [(ngModel)]="selectedDistrict" (change)="applyFilter()">
+                <option value="">All</option>
+                <option *ngFor="let d of districtList" [value]="d.name">
+                    {{ d.name }}
+                </option>
+            </select>
+        </div>
 
     </div>
 
-    <div class="table-scroll-wrapper">
-        <table class="report-table" id="reportTable">
+    <button class="action-btn view-toggle-btn" (click)="toggleViewMode()">
+        {{ viewMode === 'full' ? '📊 சுருக்க அட்டவணை (Abstract)' : '📋 முழு அட்டவணை (Full List)' }}
+    </button>
 
-            <thead>
+    <button class="export-btn" (click)="downloadPdf()">
+        📄 {{ viewMode === 'abstract' ? 'Download Abstract PDF' : 'Download PDF' }}
+    </button>
 
-                <!-- TITLE -->
-                <tr class="top-header">
-                    <th colspan="21">
-                        வேட்புமனு திரும்ப பெறுதல் மற்றும் இறுதி போட்டியிடும் வேட்பாளர்கள் பற்றிய முழு விவரங்கள்
-                    </th>
-                </tr>
+</div>
 
-                <!-- DEPARTMENT -->
-                <tr class="top-sub-header">
-                    <th colspan="21">
-                        துறை -- {{ department_name }}
-                    </th>
-                </tr>
+<!-- ABSTRACT (DISTRICT/ZONE-WISE SUMMARY) TABLE -->
+<div class="table-scroll-wrapper" *ngIf="viewMode === 'abstract'">
 
-                <!-- HEADER -->
-                <tr class="main-header">
-                    <th rowspan="2">வ.எண்</th>
-                    <th rowspan="2">மாவட்டம்</th>
-                    <th rowspan="2">சரகம்</th>
-                    <th rowspan="2">சங்கம்</th>
+    <table class="report-table abstract-table" id="abstractTable">
 
-                    <th colspan="4">தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு <br>இயக்குநர்களின் எண்ணிக்கை</th>
+        <thead>
 
-                    <th colspan="4">நிர்வாகக்குழு இயக்குநர் பதவிக்கு<br>
-                        போட்டியிடும் இயக்குநர்களின் எண்ணிக்கை</th>
+            <tr class="top-header">
+                <th colspan="9">
+                    மாவட்டம் / சரகம் வாரியான சுருக்க எண்ணிக்கை விவரம்
+                </th>
+            </tr>
 
-                    <th rowspan="2">வாக்குப்பதிவு நடைபெற்ற<br> சங்கங்களின் பெயர்</th>
-                    <th rowspan="2">மொத்த வாக்காளர்களின் எண்ணிக்கை</th>
-                    <th rowspan="2">பதிவான ஓட்டுகளின் எண்ணிக்கை</th>
-                    <th rowspan="2">வாக்குப்பதிவு (%)</th>
-                    <th rowspan="2">பயன்படுத்தப்பட்ட வாக்குப்பெட்டிகளின்<br> எணிக்கை</th>
-                    <th rowspan="2">முத்திரைத் தாள்களின் எண்ணிக்கை</th>
-                    <th rowspan="2">வாக்குப்பதிவு நடைபெற்ற இடங்களின் எண்ணிக்கை</th>
-                    <th rowspan="2">வாக்குப்பதிவின் போது பயன்படுத்தப்பட்ட<br> தேர்தல் அலுவலர் / உதவியாளர் எண்ணிக்கை</th>
-                    <th rowspan="2">வாக்குப்பதிவின் போது தேர்தல் <br>நிறுத்தப்பட்ட சங்கங்களின் பெயர்</th>
-                </tr>
+            <tr class="top-sub-header">
+                <th colspan="9">
+                    துறை -- {{ department_name }}
+                </th>
+            </tr>
 
-                <tr class="sub-header">
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-                    <th>மொத்தம்</th>
+            <tr class="main-header">
+                <th>வ.எண்</th>
+                <th>மாவட்டம்</th>
+                <th>சரகம்</th>
+                <th>சங்கங்களின் எண்ணிக்கை</th>
+                <th>மொத்த வாக்காளர்களின் எண்ணிக்கை</th>
+                <th>பதிவான வாக்குகளின் எண்ணிக்கை</th>
+                <th>வாக்குப்பதிவு (%)</th>
+                <th>பயன்படுத்தப்பட்ட வாக்குப்பெட்டிகளின்<br> எணிக்கை</th>
+                <th>வாக்குப்பதிவின் போது நிறுத்தப்பட்ட<br> சங்கங்களின் எண்ணிக்கை</th>
+            </tr>
 
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-                    <th>மொத்தம்</th>
-                </tr>
+        </thead>
 
-            </thead>
+        <tbody>
+            <tr *ngIf="abstractRows.length === 0">
+                <td colspan="9" class="empty-table-message">
+                    தயவுசெய்து முதலில் படிவம் 7-ஐ பூர்த்தி செய்யவும்.
+                </td>
+            </tr>
 
-            <tbody>
-                <tr *ngFor="let s of societies; let i = index">
+            <tr *ngFor="let a of abstractRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td class="text-left">{{ a.district_name }}</td>
+                <td class="text-left">{{ a.zone_name }}</td>
+                <td>{{ a.society_count }}</td>
+                <td>{{ a.total_voters }}</td>
+                <td>{{ a.casted_votes_count }}</td>
+                <td>{{ a.voting_percentage }}</td>
+                <td>{{ a.ballot_box_total }}</td>
+                <td>{{ a.stopped_count }}</td>
+            </tr>
 
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ form7Data?.district?.name }}</td>
-                    <!-- <td>{{ form7Data?.zone?.name }}</td> -->
-                    <td>{{ s.zone_name }}</td>
-                    <td>{{ s.society_name }}</td>
+            <!-- GRAND TOTAL -->
+            <tr *ngIf="abstractRows.length > 0" class="grand-total-row">
+                <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+                <td><strong>{{ grandTotal.society_count }}</strong></td>
+                <td><strong>{{ grandTotal.total_voters }}</strong></td>
+                <td><strong>{{ grandTotal.casted_votes_count }}</strong></td>
+                <td><strong>{{ grandTotal.voting_percentage }}</strong></td>
+                <td><strong>{{ grandTotal.ballot_box_total }}</strong></td>
+                <td><strong>{{ grandTotal.stopped_count }}</strong></td>
+            </tr>
+        </tbody>
 
-                    <!-- Rural -->
-                    <td>{{ getRuralValue(s,'sc_st') }}</td>
-                    <td>{{ getRuralValue(s,'women') }}</td>
-                    <td>{{ getRuralValue(s,'general') }}</td>
-                    <td>
-                        {{ getRuralValue(s,'sc_st') + getRuralValue(s,'women') + getRuralValue(s,'general') }}
-                    </td>
+    </table>
 
-                    <!-- Declared (eligible only) -->
-                    <td>{{ getDeclaredValue(s,'sc_st') }}</td>
-                    <td>{{ getDeclaredValue(s,'women') }}</td>
-                    <td>{{ getDeclaredValue(s,'general') }}</td>
-                    <td>{{ getDeclaredTotal(s) }}</td>
+</div>
 
-                    <!-- Other Data -->
-                    <td>{{ s.society_name }}</td>
-                    <td>{{ s.form3_total }}</td>
-                    <td>{{ s.submitted_data?.casted_votes_count }}</td>
-                    <td>{{ s.submitted_data?.voting_percentage }}</td>
-                    <td>{{ s.submitted_data?.ballot_box_count }}</td>
-                    <td>{{ s.submitted_data?.stamp_count }}</td>
-                    <td>{{ s.submitted_data?.polling_stations_count }}</td>
-                    <td>{{ s.submitted_data?.election_officers_count }}</td>
-                    <td>{{ s.submitted_data?.polling_suspension_count }}</td>
+<!-- FULL LIST TABLE -->
+<div class="table-scroll-wrapper" *ngIf="viewMode === 'full'">
 
-                </tr>
-            </tbody>
+    <table class="report-table" id="reportTable">
 
-        </table>
-    </div>
+        <thead>
+
+            <!-- TITLE -->
+            <tr class="top-header">
+                <th colspan="19">
+                    தேர்தலில் போட்டியிடும் நிர்வாகக்குழு உறுப்பினர்களின் வாக்குப்பதிவு விவரங்கள்
+                </th>
+            </tr>
+
+            <!-- DEPARTMENT -->
+            <tr class="top-sub-header">
+                <th colspan="19">
+                    துறை -- {{ department_name }}
+                </th>
+            </tr>
+
+            <!-- HEADER -->
+            <tr class="main-header">
+                <th rowspan="2" class="col-small">வ.எண்</th>
+                <th rowspan="2" class="col-medium">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+                <th rowspan="2" class="col-medium">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
+                <th rowspan="2" class="col-wide">வாக்குப்பதிவு நடைபெறும்<br> சங்கங்களின் பெயர்</th>
+
+                <th colspan="4">தேர்ந்தெடுக்கப்பட வேண்டிய நிர்வாகக்குழு <br>இயக்குநர்களின் எண்ணிக்கை</th>
+
+                <th colspan="4">நிர்வாகக்குழு இயக்குநர் பதவிக்கு <br>போட்டியிடும் உறுப்பினர்களின் எண்ணிக்கை</th>
+
+                <th rowspan="2">வாக்குப்பதிவு நாள்</th>
+                <th rowspan="2">மொத்த வாக்காளர்களின் எண்ணிக்கை</th>
+                <th rowspan="2">பதிவான வாக்குகளின் எண்ணிக்கை</th>
+                <th rowspan="2">வாக்குப்பதிவு சதவிகிதம் (%)</th>
+                <th rowspan="2">பயன்படுத்தப்பட்ட வாக்குப்பெட்டிகளின்<br> எணிக்கை</th>
+                <th colspan="2">வாக்குப்பதிவின் போது நிறுத்தப்பட்ட சங்கங்களின் பெயர் மற்றும் காரணம்</th>
+            </tr>
+
+            <tr class="sub-header">
+                <th>ப.இ./ப.கு</th>
+                <th>பெண்கள்</th>
+                <th>பொது</th>
+                <th>மொத்தம்</th>
+
+                <th>ப.இ./ப.கு</th>
+                <th>பெண்கள்</th>
+                <th>பொது</th>
+                <th>மொத்தம்</th>
+
+                <th>சங்கத்தின் பெயர்</th>
+                <th>காரணம்</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+            <tr *ngIf="tableRows.length === 0">
+                <td colspan="19" class="empty-table-message">
+                    தயவுசெய்து முதலில் படிவம் 7-ஐ பூர்த்தி செய்யவும்.
+                </td>
+            </tr>
+
+            <tr *ngFor="let r of tableRows; let i = index">
+
+                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-small">{{ i + 1 }}</td>
+                <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="col-medium">{{ r.district_name }}</td>
+                <td class="col-medium">{{ r.zone_name }}</td>
+                <td class="text-left col-wide">{{ r.society_name }}</td>
+
+                <!-- Rural -->
+                <td>{{ r.rural_sc }}</td>
+                <td>{{ r.rural_women }}</td>
+                <td>{{ r.rural_general }}</td>
+                <td>{{ r.rural_total }}</td>
+
+                <!-- Declared (eligible only) -->
+                <td>{{ r.dec_sc }}</td>
+                <td>{{ r.dec_women }}</td>
+                <td>{{ r.dec_general }}</td>
+                <td>{{ r.dec_total }}</td>
+
+                <!-- Other Data -->
+                <td>{{ r.polling_date }}</td>
+                <td>{{ r.total_voters }}</td>
+                <td>{{ r.casted_votes_count }}</td>
+                <td>{{ r.voting_percentage }}</td>
+                <td>{{ r.ballot_box_count }}</td>
+                <td>{{ r.stop_name }}</td>
+                <td>{{ r.stop_reason }}</td>
+
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>

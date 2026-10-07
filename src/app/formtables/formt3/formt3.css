@@ -47,6 +47,25 @@
     table-layout: auto;
 }
 
+.vertical-header {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
+    height: 170px;
+    padding: 8px 4px;
+    white-space: nowrap;
+}
+
+.col-number-cell {
+    background: #fde68a;
+    color: #78350f;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 8px;
+}
+
 .empty-table-message {
     padding: 30px;
     margin: 0;
@@ -57,7 +76,7 @@
     border: 1px solid #4d7c0f;
     padding: 8px;
     text-align: center;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 /* Headers */
@@ -90,7 +109,7 @@
     margin-top: 20px;
 }
 
-.report-table thead tr:not(.top-header):not(.top-sub-header):not(.sub-header) th {
+.report-table thead tr:not(.top-header):not(.top-sub-header):not(.sub-header):not(.col-number-row) th {
     background: #61b9c0;
     color: #fff;
     position: sticky;

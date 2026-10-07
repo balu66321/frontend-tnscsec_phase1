@@ -20,6 +20,15 @@ export class Formt7 implements OnInit {
   form7Data: any;
   societies: any[] = [];
 
+  readonly reasonOptions = [
+    { value: 'legal_order', label: 'சட்ட ஒழுங்கு' },
+    { value: 'natural_disaster', label: 'இயற்கை பேரிடர்' },
+    { value: 'court_injunction', label: 'நீதிமன்ற தடையாணை' },
+    { value: 'election_cancelled_by_commission', label: 'ஆணையத்தால் தேர்தல் ரத்து' },
+    { value: 'insufficient_quorum', label: 'சிற்றெண் குறைவு' },
+    { value: 'other', label: 'இதர காரணங்கள்' }
+  ];
+
   constructor(
     private userservice: UserService,
     private http: HttpClient   // kept because old code uses it
@@ -66,6 +75,24 @@ export class Formt7 implements OnInit {
       }
     });
     return total;
+  }
+
+  resolveStopName(society: any): string {
+    return society.submitted_data?.stop_reason ? society.society_name : '-';
+  }
+
+  resolveStopReason(society: any): string {
+
+    const reason = society.submitted_data?.stop_reason;
+
+    if (!reason) return '-';
+
+    const opt = this.reasonOptions.find(r => r.value === reason);
+    const label = opt?.label || reason;
+
+    return reason === 'other' && society.submitted_data?.stop_other_reason_text
+      ? `${label} - ${society.submitted_data.stop_other_reason_text}`
+      : label;
   }
 
   // Excel Export

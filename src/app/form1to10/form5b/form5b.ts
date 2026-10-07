@@ -27,7 +27,18 @@ export class Form5b implements OnInit {
   showStopPopup = false;
   showFinalSubmitPopup = false;
 
-  stopRemark = '';
+  stopReason = '';
+  stopOtherReasonText: string | null = null;
+
+  readonly reasonOptions = [
+    { value: 'legal_order', label: 'சட்ட ஒழுங்கு' },
+    { value: 'natural_disaster', label: 'இயற்கை பேரிடர்' },
+    { value: 'court_injunction', label: 'நீதிமன்ற தடையாணை' },
+    { value: 'election_cancelled_by_commission', label: 'ஆணையத்தால் தேர்தல் ரத்து' },
+    { value: 'insufficient_candidates', label: 'சிற்றெண் குறைவு' },
+    { value: 'other', label: 'இதர காரணங்கள்' }
+  ];
+
   isEditMode = false;
   editableData: any = null;
   formSubmitted = false;
@@ -300,7 +311,9 @@ export class Form5b implements OnInit {
   openStopPopup(soc: any) {
 
     this.selectedSociety = soc;
-    this.stopRemark = '';
+    // '' (not null) so it matches the dropdown's placeholder <option value="">
+    this.stopReason = soc.stop_reason || '';
+    this.stopOtherReasonText = soc.stop_other_reason_text || null;
 
     this.showStopPopup = true;
 
@@ -319,9 +332,9 @@ export class Form5b implements OnInit {
   // }
   submitStop() {
 
-    if (!this.stopRemark) {
+    if (!this.stopReason) {
 
-      alert('தேர்தல் நிறுத்தக் குறிப்பு கொடுக்கவும்');
+      alert('தேர்தல் நிறுத்துவதற்கான காரணத்தை தேர்வு செய்யவும்');
       return;
 
     }
@@ -329,7 +342,8 @@ export class Form5b implements OnInit {
     const payload = {
 
       form4_filed_soc_id: this.selectedSociety.form4_filed_soc_id,
-      stop_remark: this.stopRemark
+      reason: this.stopReason,
+      other_reason_text: this.stopReason === 'other' ? (this.stopOtherReasonText || '') : null
 
     };
 
@@ -338,6 +352,8 @@ export class Form5b implements OnInit {
       if (res?.success) {
 
         this.selectedSociety.stopDone = true;
+        this.selectedSociety.stop_reason = this.stopReason;
+        this.selectedSociety.stop_other_reason_text = payload.other_reason_text;
 
         this.closeStop();
 

@@ -1,101 +1,184 @@
-/* ======================================
-   TABLE BASE (important)
+/* ================= PAGE ================= */
 
+.page-content {
+    display: flex;
+    flex-direction: column;
+    background: #f3f4f6;
+}
 
+/* ================= ACTION BAR ================= */
 
+.table-actions {
 
-   ====================================== */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 
-/* Table base */
-.report-table {
-    min-width: 4200px;
+    padding: 10px 15px;
+
+    background: #fff;
+
+    border-bottom: 1px solid #dcdcdc;
+
+}
+
+/* ================= FILTER ================= */
+
+.filter-section {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+}
+
+.filter-section label {
+
+    font-weight: 600;
+
+}
+
+.filter-item {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+}
+
+.filter-section select {
+
+    min-width: 200px;
+
+    padding: 6px 10px;
+
+    border: 1px solid #bdbdbd;
+
+    border-radius: 4px;
+
+    background: #fff;
+
+}
+
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+    padding: 8px 16px;
+    border: 1px solid #1a73e8;
+    cursor: pointer;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
+
+.export-btn {
+    padding: 9px 18px;
+    border: 1px solid #4d7c0f;
+    background: #e5f7e5;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.export-btn:hover {
+    background: #cfeccc;
+}
+
+/* ================= TABLE WRAPPER ================= */
+
+.table-scroll-wrapper {
     width: 100%;
+    max-height: calc(100vh - 260px);
+    /* leaves headroom for the site's fixed (position:fixed) footer */
+    overflow: auto;
+    border: 1px solid #4d7c0f;
+    background: #fff;
+}
+
+/* ================= TABLE ================= */
+
+.report-table {
+    min-width: 5600px;
     border-collapse: collapse;
     table-layout: fixed;
     font-family: "Noto Sans Tamil", sans-serif;
     font-size: 14px;
 }
 
-
-
-.empty-table-message {
-    text-align: center;
-    padding: 20px;
-    font-size: 22px;
-    font-weight: 600;
-    color: #d32f2f;
-
-    background: #fff;
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-
-
-/* Common border */
 .report-table th,
 .report-table td {
     border: 1px solid #4d7c0f;
+    padding: 6px;
+    text-align: center;
+    vertical-align: middle;
 }
 
-/* ===== TOP HEADER ===== */
+/* ================= HEADERS =================
+   A sticky row's `top` must equal the exact cumulative height of every
+   sticky row above it — Chromium shifts a sticky cell down to match its
+   `top` offset even before any scrolling happens, so a `top` larger than
+   the true preceding height permanently overlaps the row below it. These
+   values are measured against this table's actual rendered row heights.
+   The Abstract and Full List tables share these class names but have
+   different row heights, so each is scoped by its own table id. */
+
 .top-header th {
     background: #b7e3a1;
     font-size: 16px;
     font-weight: 700;
-    padding: 8px;
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 100;
 }
 
-/* ===== TOP SUB HEADER ===== */
-.top-sub-header th {
+#abstractTable .top-sub-header th {
     background: #c6efb3;
     text-align: left;
-    padding: 6px 10px;
     position: sticky;
-    top: 36px;
-    /* must match top-header height */
-    z-index: 49;
+    top: 34px;
+    z-index: 99;
 }
 
-/* ===== MAIN HEADER ===== */
-.main-header th {
+#abstractTable .main-header th {
     background: #61b9c0;
     color: #fff;
-    padding: 6px;
+    position: sticky;
+    top: 66px;
+    z-index: 98;
+}
+
+#reportTable .top-sub-header th {
+    background: #c6efb3;
+    text-align: left;
+    position: sticky;
+    top: 34px;
+    z-index: 99;
+}
+
+#reportTable .main-header th {
+    background: #61b9c0;
+    color: #fff;
     line-height: 1.3;
     position: sticky;
-    top: 68px;
-    /* 36 + 32 approx */
-    z-index: 48;
+    top: 66px;
+    z-index: 98;
 }
 
-/* ===== SUB HEADER ===== */
-.sub-header th {
+#reportTable .sub-header th {
     background: #9fd38a;
     font-size: 12px;
-    padding: 4px;
     position: sticky;
-    top: 110px;
-    z-index: 47;
+    top: 116px;
+    z-index: 97;
 }
 
-/* ==============
-   BODY CELLS
-====================================== */
-.report-table td {
-    border: 1px solid #4d7c0f;
-    padding: 6px;
-    text-align: center;
-    vertical-align: top;
-}
+/* ================= COLUMN WIDTHS ================= */
 
-/* ======================================
-   COLUMN WIDTHS
-====================================== */
 .col-small {
     width: 60px;
 }
@@ -104,88 +187,112 @@
     width: 180px;
 }
 
-.col-wide {
-    width: 500px;
+.col-name {
+    width: 280px;
+    min-width: 260px;
     word-break: break-word;
+    white-space: normal;
 }
 
-/* ======================================
-   BUTTON
-====================================== */
-.table-actions {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
+.col-num {
+    width: 80px;
+    min-width: 70px;
 }
 
-.action-btn {
-    padding: 6px 14px;
-    border: 1px solid #4d7c0f;
-    background: #e5f7e5;
-    cursor: pointer;
+.col-namelist {
+    width: 220px;
+    min-width: 200px;
+    word-break: break-word;
+    white-space: normal;
 }
 
-.action-btn:hover {
-    background: #c7e9c7;
+.col-reason {
+    width: 260px;
+    min-width: 240px;
+    word-break: break-word;
+    white-space: normal;
 }
 
-.page-content {
-    position: fixed;
-    top: 90px;
-    /* header height */
-    bottom: 50px;
-    /* footer height */
-    left: 0;
-    right: 0;
-    overflow: hidden;
-    /* prevent page scroll */
-    background: #f3f4f6;
+.text-left {
+    text-align: left;
 }
+
+.abstract-table {
+    min-width: 900px;
+    table-layout: auto;
+}
+
+.abstract-table th,
+.abstract-table td {
+    min-width: 100px;
+}
+
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
+
+.empty-table-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #d32f2f;
+    background: #fff;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* ================= SCROLLBAR ================= */
 
 .table-scroll-wrapper {
-    height: calc(100% - 50px);
-    /* leave space for Export button */
-    overflow: auto;
-    border: 1px solid #4d7c0f;
-    background: #fff;
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
 }
 
-.table-actions {
-    height: 50px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0 10px;
-    background: #ffffff;
-    border-bottom: 1px solid #dcdcdc;
+.table-scroll-wrapper::-webkit-scrollbar {
+    height: 14px;
+    width: 14px;
 }
 
-.filter-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.table-scroll-wrapper::-webkit-scrollbar-track {
+    background: #e5f7e5;
 }
 
-.filter-section select {
-    width: 220px;
-    padding: 5px;
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
 }
 
-.table-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3a5e0a;
 }
 
-.filter-bar {
+/* ================= RESPONSIVE ================= */
 
-    position: sticky;
+@media (max-width:768px) {
 
-    top: 0;
+    .table-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-    z-index: 120;
+    .filter-section {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-    background: #fff;
+    .filter-item {
+        width: 100%;
+    }
+
+    .filter-section select {
+        width: 100%;
+    }
 
 }

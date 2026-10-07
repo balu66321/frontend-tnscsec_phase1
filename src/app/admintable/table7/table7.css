@@ -1,19 +1,3 @@
-/* ================= PAGE ================= */
-
-.page-content {
-    position: fixed;
-    top: 90px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
-    background: #f3f4f6;
-}
-
 /* ================= ACTION BAR ================= */
 
 .table-actions {
@@ -21,14 +5,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 
-    padding: 12px 16px;
+    padding: 10px 15px;
 
-    background: #ffffff;
+    background: #fff;
 
     border-bottom: 1px solid #dcdcdc;
-
-    flex-shrink: 0;
 
 }
 
@@ -46,26 +30,45 @@
 .filter-section label {
 
     font-weight: 600;
-    font-size: 16px;
+
+}
+
+.filter-item {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
 }
 
 .filter-section select {
 
-    min-width: 260px;
-    height: 38px;
+    min-width: 200px;
 
     padding: 6px 10px;
 
     border: 1px solid #bdbdbd;
+
     border-radius: 4px;
 
     background: #fff;
-    font-size: 15px;
 
 }
 
 /* ================= BUTTON ================= */
+
+.view-toggle-btn {
+    font-weight: 600;
+    background: #dbeafe;
+    border-color: #1a73e8;
+    padding: 8px 16px;
+    border: 1px solid #1a73e8;
+    cursor: pointer;
+}
+
+.view-toggle-btn:hover {
+    background: #bfdbfe;
+}
 
 .export-btn {
 
@@ -93,14 +96,11 @@
 
 .table-scroll-wrapper {
 
-    flex: 1;
-
-    min-height: 0;
-
     width: 100%;
+    max-height: calc(100vh - 260px);
+    /* leaves headroom for the site's fixed (position:fixed) footer */
 
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: auto;
 
     border: 1px solid #4d7c0f;
 
@@ -112,9 +112,9 @@
 
 .report-table {
 
-    min-width: 4200px;
-
-    width: max-content;
+    min-width: 3200px;
+    /* width: max-content combined with table-layout: fixed/auto is
+       browser-inconsistent — rely on min-width alone. */
 
     border-collapse: collapse;
 
@@ -123,8 +123,6 @@
     font-family: "Noto Sans Tamil", sans-serif;
 
     font-size: 14px;
-
-    white-space: nowrap;
 
 }
 
@@ -157,13 +155,21 @@
 
 }
 
-/* ================= HEADERS ================= */
+/* ================= HEADERS =================
+   A sticky row's `top` must equal the exact cumulative height of every
+   sticky row above it — Chromium shifts a sticky cell down to match its
+   `top` offset even before any scrolling happens, so a `top` larger than
+   the true preceding height permanently overlaps the row below it. These
+   values are measured against this table's actual rendered row heights,
+   not guessed/copied from another table. The Abstract and Full List
+   tables share these class names but have different row heights, so each
+   is scoped by its own table id. */
 
 .top-header th {
 
     background: #b7e3a1;
 
-    font-size: 17px;
+    font-size: 16px;
 
     font-weight: bold;
 
@@ -175,44 +181,43 @@
 
 }
 
-.top-sub-header th {
-
+#abstractTable .top-sub-header th {
     background: #c6efb3;
-
     text-align: left;
-
     position: sticky;
-
-    top: 44px;
-
+    top: 38px;
     z-index: 99;
-
 }
 
-.main-header th {
-
+#abstractTable .main-header th {
     background: #5fa9b0;
-
     color: #fff;
-
     position: sticky;
-
-    top: 84px;
-
+    top: 74px;
     z-index: 98;
-
 }
 
-.sub-header th {
-
-    background: #9fd38a;
-
+#reportTable .top-sub-header th {
+    background: #c6efb3;
+    text-align: left;
     position: sticky;
+    top: 38px;
+    z-index: 99;
+}
 
-    top: 135px;
+#reportTable .main-header th {
+    background: #5fa9b0;
+    color: #fff;
+    position: sticky;
+    top: 74px;
+    z-index: 98;
+}
 
+#reportTable .sub-header th {
+    background: #9fd38a;
+    position: sticky;
+    top: 131px;
     z-index: 97;
-
 }
 
 /* ================= COLUMN WIDTH ================= */
@@ -225,13 +230,13 @@
 
 .col-medium {
 
-    width: 180px;
+    width: 160px;
 
 }
 
 .col-wide {
 
-    width: 420px;
+    width: 260px;
 
 }
 
@@ -243,39 +248,61 @@
 
 }
 
-.report-table td {
+.abstract-table {
+    min-width: 900px;
+    table-layout: auto;
+}
 
-    white-space: pre-line;
+.abstract-table th,
+.abstract-table td {
+    min-width: 100px;
+}
 
-    word-break: break-word;
+.grand-total-row td {
+    background: #fef9c3;
+    border-top: 2px solid #4d7c0f;
+    font-weight: bold;
+}
 
+.empty-table-message {
+    padding: 16px;
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
 }
 
 /* ================= SCROLLBAR ================= */
 
+.table-scroll-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #4d7c0f #e5f7e5;
+}
+
 .table-scroll-wrapper::-webkit-scrollbar {
 
-    height: 12px;
-    width: 12px;
+    height: 14px;
+    width: 14px;
 
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-track {
 
-    background: #e6e6e6;
+    background: #e5f7e5;
 
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-thumb {
 
-    background: #7d7d7d;
-    border-radius: 10px;
+    background: #4d7c0f;
+    border-radius: 7px;
+    border: 2px solid #e5f7e5;
 
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
 
-    background: #5f5f5f;
+    background: #3a5e0a;
 
 }
 
@@ -289,7 +316,7 @@
 
         align-items: flex-start;
 
-        gap: 12px;
+        gap: 10px;
 
     }
 
@@ -297,16 +324,19 @@
 
         width: 100%;
 
+        flex-direction: column;
+
+        align-items: stretch;
+
     }
 
-
-    .filter-section select {
+    .filter-item {
 
         width: 100%;
 
     }
 
-    .export-btn {
+    .filter-section select {
 
         width: 100%;
 

@@ -12,71 +12,103 @@
 
                 <!-- Title -->
                 <tr class="top-header">
-                    <th colspan="10">
-                        வேட்புமனு பரிசீலனை மற்றும் செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்
+                    <th colspan="14">
+                        வேட்புமனு தாக்கல் செய்தவர்களின் பெயர் மற்றும் ஆதார் விவரங்கள்
                     </th>
                 </tr>
 
                 <!-- Department -->
                 <tr class="top-sub-header">
-                    <th colspan="10">
+                    <th colspan="14">
                         துறை -- {{ department_name }}
                     </th>
                 </tr>
 
                 <!-- Group Header -->
                 <tr class="group-header">
-                    <th rowspan="2">வ.எண்</th>
-                    <th rowspan="2">மாவட்ட தேர்தல் அலுவலர் / மாவட்டம்
+                    <th rowspan="3">வ.எண்</th>
+                    <th rowspan="3">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+                    <th rowspan="3">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
+
+                    <th colspan="5">
+                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் வேட்பாளர்களின் விவரங்கள் மற்றும்
+                        தேர்ந்தெடுக்கப்பட வேண்டிய உறுப்பினர்களின் எண்ணிக்கை
                     </th>
-                    <th rowspan="2">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
 
-                    <th colspan="4">
-                        வேட்புமனு தாக்கல் செய்த உறுப்பினர்களின் பெயர் மற்றும் ஆதார் எண் விபரங்களை பதிவு செய்க </th>
-
-                    <th colspan="3">
-                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை </th>
+                    <th colspan="6">
+                        வேட்புமனு தாக்கல் செய்யப்பட்ட வேட்பாளரின் பெயர்
+                    </th>
                 </tr>
 
-                <!-- Sub Header -->
-                <tr class="sub-header">
-                    <th>சங்கங்கள்</th>
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
+                <tr class="mid-header">
+                    <th rowspan="2" class="wrap-col">சங்கத்தின் பெயர்</th>
+                    <th rowspan="2">ப.இ./ப.கு</th>
+                    <th rowspan="2">பெண்</th>
+                    <th rowspan="2">பொது</th>
+                    <th rowspan="2">மொத்தம்</th>
 
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
+                    <th colspan="2">ப.இ./ப.கு</th>
+                    <th colspan="2">பெண்</th>
+                    <th colspan="2">பொது</th>
+                </tr>
+
+                <tr class="sub-header">
+                    <th>வேட்பாளரின் பெயர்</th>
+                    <th>ஆதார் எண்</th>
+
+                    <th>வேட்பாளரின் பெயர்</th>
+                    <th>ஆதார் எண்</th>
+
+                    <th>வேட்பாளரின் பெயர்</th>
+                    <th>ஆதார் எண்</th>
+                </tr>
+
+                <tr class="col-number-row">
+                    <th class="col-number-cell">1</th>
+                    <th class="col-number-cell">2</th>
+                    <th class="col-number-cell">3</th>
+                    <th class="col-number-cell" colspan="5">4</th>
+                    <th class="col-number-cell" colspan="6">5</th>
                 </tr>
 
             </thead>
 
             <tbody>
                 <tr *ngIf="tableRows.length === 0">
-                    <td colspan="13" class="empty-table-message">
+                    <td colspan="14" class="empty-table-message">
                         தயவுசெய்து முதலில் படிவம் 5-ஐ பூர்த்தி செய்யவும்.
                     </td>
                 </tr>
 
-                <tr *ngFor="let r of tableRows; let i = index">
+                <tr *ngFor="let r of tableRows">
 
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ r.district_name }}</td>
-                    <td>{{ r.zone_name }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.serial }}</td>
 
-                    <!-- Society -->
-                    <td class="text-left">{{ r.society_name }}</td>
+                    <td *ngIf="r.districtZoneRowSpan" [attr.rowspan]="r.districtZoneRowSpan">
+                        {{ r.districtName }}
+                    </td>
+                    <td *ngIf="r.districtZoneRowSpan" [attr.rowspan]="r.districtZoneRowSpan">
+                        {{ r.zoneName }}
+                    </td>
 
-                    <!-- MEMBER NAMES -->
-                    <td class="text-left" [innerHTML]="r.sc_names"></td>
-                    <td class="text-left" [innerHTML]="r.women_names"></td>
-                    <td class="text-left" [innerHTML]="r.general_names"></td>
+                    <!-- Filed society + required counts (once per society) -->
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan" class="wrap-col text-left">
+                        {{ r.society_name }}
+                    </td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.sc_total }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.women_total }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.general_total }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.grand_total }}</td>
 
-                    <!-- COUNTS -->
-                    <td>{{ r.sc_count }}</td>
-                    <td>{{ r.women_count }}</td>
-                    <td>{{ r.general_count }}</td>
+                    <!-- Candidates -->
+                    <td class="text-left">{{ r.sc?.member_name ?? '-' }}</td>
+                    <td>{{ r.sc?.aadhar_no ?? '-' }}</td>
+
+                    <td class="text-left">{{ r.women?.member_name ?? '-' }}</td>
+                    <td>{{ r.women?.aadhar_no ?? '-' }}</td>
+
+                    <td class="text-left">{{ r.general?.member_name ?? '-' }}</td>
+                    <td>{{ r.general?.aadhar_no ?? '-' }}</td>
 
                 </tr>
 

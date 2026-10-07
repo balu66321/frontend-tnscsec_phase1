@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 interface Society {
   society_id: number;
   society_name: string;
+  voter_list_prepared_count?: number | null;
 }
 
 interface Form2ApiRow {
@@ -25,6 +26,7 @@ interface Form2ApiRow {
   selected_soc: Society[];
   non_selected_soc: Society[];
 
+  selected_count: number;
   non_selected_count: number;
   remark: string;
 }
@@ -36,10 +38,30 @@ interface TableRow {
   f3_name: string | null;
   f5_name: string | null;
   f6_name: string | null;
+  voter_list_prepared_count: number | null;
 
+  selected_count?: number;
   non_selected_count?: number;
   remark?: string;
   rowSpan?: number;
+  districtSerial?: number;
+}
+
+// One row per district+zone group with everything summed —
+// no per-society names, counts only.
+interface AbstractRow {
+  district_name: string;
+  zone_name: string;
+  requiredCount: number;
+  preparedCount: number;
+  preparedVoterTotal: number;
+  notPreparedCount: number;
+  notPreparedVoterTotal: number;
+  // Officer-prepared societies are, by definition, the same set as
+  // "not prepared by society" (non_selected_soc) — the officer prepares
+  // the list whenever the society itself didn't.
+  officerPreparedCount: number;
+  officerPreparedVoterTotal: number;
 }
 
 /* =========================
@@ -58,6 +80,20 @@ export class Table2 implements OnInit {
   department_name: string = '';
   tableRows: TableRow[] = [];
   originalRows: TableRow[] = [];
+  abstractRows: AbstractRow[] = [];
+  viewMode: 'full' | 'abstract' = 'full';
+
+  grandTotal: AbstractRow = {
+    district_name: '',
+    zone_name: '',
+    requiredCount: 0,
+    preparedCount: 0,
+    preparedVoterTotal: 0,
+    notPreparedCount: 0,
+    notPreparedVoterTotal: 0,
+    officerPreparedCount: 0,
+    officerPreparedVoterTotal: 0
+  };
 
   selectedDepartment: string = '';
   selectedDistrict: string = '';
@@ -155,7 +191,16 @@ export class Table2 implements OnInit {
 
     this.tableRows = [];
 
+    let districtSerial = 0;
+
     data.forEach(row => {
+
+      districtSerial += 1;
+
+      // society_id -> whichever count was entered for it (selected or non-selected side)
+      const countMap = new Map<number, number | null>();
+      (row.selected_soc || []).forEach(s => countMap.set(s.society_id, s.voter_list_prepared_count ?? null));
+      (row.non_selected_soc || []).forEach(s => countMap.set(s.society_id, s.voter_list_prepared_count ?? null));
 
       const f3List = row.masterzone_societies || [];
       const f5List = row.selected_soc || [];
@@ -179,11 +224,14 @@ export class Table2 implements OnInit {
           f3_name: society.society_name,
           f5_name: isSelected ? society.society_name : null,
           f6_name: isNonSelected ? society.society_name : null,
+          voter_list_prepared_count: countMap.get(society.society_id) ?? null,
 
+          selected_count: index === 0 ? row.selected_count : undefined,
           non_selected_count: index === 0 ? row.non_selected_count : undefined,
           remark: index === 0 ? row.remark : undefined,
 
-          rowSpan: index === 0 ? totalRows : undefined
+          rowSpan: index === 0 ? totalRows : undefined,
+          districtSerial: index === 0 ? districtSerial : undefined
 
         });
 
@@ -191,6 +239,95 @@ export class Table2 implements OnInit {
 
     });
 
+    this.buildAbstractRows();
+
+  }
+
+  /* =========================
+     ABSTRACT (DISTRICT/ZONE-WISE SUMMARY)
+  ========================= */
+  private buildAbstractRows(): void {
+
+    const groups = new Map<string, AbstractRow>();
+
+    this.tableRows.forEach(r => {
+
+      const key = `${r.district_name}||${r.zone_name}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          district_name: r.district_name,
+          zone_name: r.zone_name,
+          requiredCount: 0,
+          preparedCount: 0,
+          preparedVoterTotal: 0,
+          notPreparedCount: 0,
+          notPreparedVoterTotal: 0,
+          officerPreparedCount: 0,
+          officerPreparedVoterTotal: 0
+        });
+      }
+
+      const g = groups.get(key)!;
+
+      // selected_count / non_selected_count are per form2 RECORD (repeated
+      // on every row belonging to that one record), but a district+zone can
+      // have several form2 records — e.g. different departments each filing
+      // for the same district — so they must be summed across records, not
+      // overwritten by whichever record's first row is seen last.
+      if (r.rowSpan) {
+        g.requiredCount += r.rowSpan;
+        g.preparedCount += r.selected_count ?? 0;
+        g.notPreparedCount += r.non_selected_count ?? 0;
+        // Officer-prepared count mirrors not-prepared-by-society count.
+        g.officerPreparedCount += r.non_selected_count ?? 0;
+      }
+
+      if (r.f5_name) {
+        g.preparedVoterTotal += r.voter_list_prepared_count ?? 0;
+      } else if (r.f6_name) {
+        g.notPreparedVoterTotal += r.voter_list_prepared_count ?? 0;
+        g.officerPreparedVoterTotal += r.voter_list_prepared_count ?? 0;
+      }
+
+    });
+
+    this.abstractRows = Array.from(groups.values());
+
+    this.computeGrandTotal();
+  }
+
+  // Sum of every district's abstract totals — reflects whatever
+  // Department/District filter produced the current tableRows.
+  private computeGrandTotal(): void {
+
+    const totals: AbstractRow = {
+      district_name: '',
+      zone_name: '',
+      requiredCount: 0,
+      preparedCount: 0,
+      preparedVoterTotal: 0,
+      notPreparedCount: 0,
+      notPreparedVoterTotal: 0,
+      officerPreparedCount: 0,
+      officerPreparedVoterTotal: 0
+    };
+
+    this.abstractRows.forEach(g => {
+      totals.requiredCount += g.requiredCount;
+      totals.preparedCount += g.preparedCount;
+      totals.preparedVoterTotal += g.preparedVoterTotal;
+      totals.notPreparedCount += g.notPreparedCount;
+      totals.notPreparedVoterTotal += g.notPreparedVoterTotal;
+      totals.officerPreparedCount += g.officerPreparedCount;
+      totals.officerPreparedVoterTotal += g.officerPreparedVoterTotal;
+    });
+
+    this.grandTotal = totals;
+  }
+
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'full' ? 'abstract' : 'full';
   }
 
   /* =========================
@@ -220,6 +357,8 @@ export class Table2 implements OnInit {
 
           this.tableRows = [];
           this.originalRows = [];
+          this.abstractRows = [];
+          this.computeGrandTotal();
 
         }
 
@@ -268,6 +407,25 @@ export class Table2 implements OnInit {
   // }
 
   downloadPdf(): void {
+
+    if (this.viewMode === 'abstract') {
+
+      const deptId = this.departmentList.find(d => d.name === this.selectedDepartment)?.id;
+      const distId = this.districtList.find(d => d.name === this.selectedDistrict)?.id;
+
+      this.userService.getForm2AbstractPdf(deptId, distId).subscribe(
+        (res: Blob) => {
+          saveAs(
+            new Blob([res], { type: 'application/pdf' }),
+            'Form2_Abstract_Report.pdf'
+          );
+        },
+        error => {
+          console.error('Abstract PDF download error:', error);
+        }
+      );
+      return;
+    }
 
     const departmentId = 2;
 

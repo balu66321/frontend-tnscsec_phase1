@@ -30,6 +30,7 @@ interface Form1ApiRow {
   zone_name: string;
   masterzone_count: number;
   remark: string;
+  selected_count: number;
   non_selected_count: number;
   selected_soc: SelectedSociety[];
   masterzone_societies: MasterzoneSociety[];
@@ -51,8 +52,17 @@ interface TableRow {
   isSelected: boolean;
   remark: string;
 
+  // Group-level values, set only on the first row of each district/zone group
+  // (rowSpan rows), so the cells can span the whole group.
   rowSpan?: number;
-  non_selected_count?: number;
+  selected_count?: number;
+
+  // Per-row reason this specific society did not get its election notice
+  // (one of Form1's reasonOptions values), or null for a selected society.
+  reason: string | null;
+
+  // Non-selected count repeated on every row of the group
+  group_non_selected_count: number;
 }
 
 /* =========================
@@ -124,6 +134,7 @@ export class Formt1 implements OnInit {
       allSocieties.forEach((soc: any, index: number) => {
 
         const isSelected = selectedIds.has(soc.society_id);
+        const isFirst = index === 0;
 
         this.tableRows.push({
           id: row.id,
@@ -141,8 +152,11 @@ export class Formt1 implements OnInit {
           isSelected: isSelected,
           remark: row.remark,
 
-          rowSpan: index === 0 ? totalRows : undefined,
-          non_selected_count: index === 0 ? row.non_selected_count : undefined
+          rowSpan: isFirst ? totalRows : undefined,
+          selected_count: isFirst ? row.selected_count : undefined,
+          reason: isSelected ? null : (soc.reason || null),
+
+          group_non_selected_count: row.non_selected_count
         });
 
       });

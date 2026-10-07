@@ -1,21 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user';
-import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
+interface CandidateEntry {
+  member_name: string;
+  aadhar_no: string;
+}
+
+// One row per candidate-index within a society (row 1 shows candidate #1
+// in each category, row 2 shows candidate #2, etc.) — society name and the
+// required-counts columns only render on the first row of that society
+// (rowSpan); district/zone is one value for the whole response, so it only
+// renders on the table's very first row, spanning every row.
 interface TableRow {
-  district_name: string;
-  zone_name: string;
+  serial: number;
   society_name: string;
 
-  sc_names: string;
-  women_names: string;
-  general_names: string;
+  sc_total: number;
+  women_total: number;
+  general_total: number;
+  grand_total: number;
 
-  sc_count: number;
-  women_count: number;
-  general_count: number;
+  sc: CandidateEntry | null;
+  women: CandidateEntry | null;
+  general: CandidateEntry | null;
+
+  districtName: string;
+  zoneName: string;
+
+  rowSpan?: number;
+  districtZoneRowSpan?: number;
 }
 
 @Component({
@@ -61,49 +76,83 @@ export class Formt5 implements OnInit {
 
   private prepareRows(data: any): void {
 
-    const members = data.data || [];   // ✅ FIXED HERE
+    const districtGroups = data.data || [];
 
-    const societyMap: any = {};
+    const rows: TableRow[] = [];
+    let serial = 0;
 
-    members.forEach((m: any) => {
+    districtGroups.forEach((districtGroup: any) => {
 
-      const key = m.society_name;
+      const districtName = districtGroup.district_name || '';
+      const zoneName = districtGroup.zone_name || '';
+      const members = districtGroup.members || [];
 
-      if (!societyMap[key]) {
-        societyMap[key] = {
-          district_name: data.district_name,
-          zone_name: data.zone_name,
-          society_name: key,
-          sc: [],
-          women: [],
-          general: []
+      const societyMap = new Map<string, {
+        society_name: string;
+        sc: CandidateEntry[];
+        women: CandidateEntry[];
+        general: CandidateEntry[];
+      }>();
+
+      members.forEach((m: any) => {
+
+        if (!societyMap.has(m.society_name)) {
+          societyMap.set(m.society_name, {
+            society_name: m.society_name,
+            sc: [],
+            women: [],
+            general: []
+          });
+        }
+
+        const group = societyMap.get(m.society_name)!;
+        const entry: CandidateEntry = {
+          member_name: m.member_name,
+          aadhar_no: m.aadhar_no
         };
-      }
 
-      if (m.category_type === 'sc_st') {
-        societyMap[key].sc.push(m.member_name);
-      }
-      else if (m.category_type === 'women') {
-        societyMap[key].women.push(m.member_name);
-      }
-      else if (m.category_type === 'general') {
-        societyMap[key].general.push(m.member_name);
+        if (m.category_type === 'sc_st') group.sc.push(entry);
+        else if (m.category_type === 'women') group.women.push(entry);
+        else if (m.category_type === 'general') group.general.push(entry);
+      });
+
+      const groupStart = rows.length;
+
+      societyMap.forEach(group => {
+
+        const maxRows = Math.max(group.sc.length, group.women.length, group.general.length, 1);
+
+        serial += 1;
+
+        for (let i = 0; i < maxRows; i++) {
+
+          rows.push({
+            serial,
+            society_name: i === 0 ? group.society_name : '',
+
+            sc_total: group.sc.length,
+            women_total: group.women.length,
+            general_total: group.general.length,
+            grand_total: group.sc.length + group.women.length + group.general.length,
+
+            sc: group.sc[i] || null,
+            women: group.women[i] || null,
+            general: group.general[i] || null,
+
+            districtName,
+            zoneName,
+
+            rowSpan: i === 0 ? maxRows : undefined
+          });
+        }
+      });
+
+      if (rows.length > groupStart) {
+        rows[groupStart].districtZoneRowSpan = rows.length - groupStart;
       }
     });
 
-    this.tableRows = Object.values(societyMap).map((s: any) => ({
-      district_name: s.district_name,
-      zone_name: s.zone_name,
-      society_name: s.society_name,
-
-      sc_names: s.sc.join('<br>'),
-      women_names: s.women.join('<br>'),
-      general_names: s.general.join('<br>'),
-
-      sc_count: s.sc.length,
-      women_count: s.women.length,
-      general_count: s.general.length
-    }));
+    this.tableRows = rows;
   }
 
   downloadPdf(): void {

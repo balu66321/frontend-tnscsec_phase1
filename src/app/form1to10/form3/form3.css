@@ -23,10 +23,46 @@
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.6;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }
 
 .society-card:last-child {
     margin-bottom: 0;
+}
+
+.society-card-name {
+    flex: 1;
+}
+
+.member-count-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.member-count-label {
+    background: #1e88b8;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 15px;
+}
+
+.member-count-value {
+    width: 90px;
+    height: 38px;
+    border: 1px solid #2e7d32;
+    border-radius: 4px;
+    padding: 6px 8px;
+    background: #fff;
+    text-align: center;
+    font-weight: bold;
 }
 
 

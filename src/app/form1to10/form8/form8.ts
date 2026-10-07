@@ -17,14 +17,19 @@ export class Form8 implements OnInit {
     Zone_name = '';
 
     countingSocieties: any[] = [];
-    stoppedSocieties: any[] = [];
 
 
     isEditMode = false;
     editableData: any = null;
     form8_id!: number;
     selectedSociety: any = null;
+    readonly memberCategories = [
+        { key: 'SC_ST', label: 'ப.தி./ப.கு' },
+        { key: 'WOMEN', label: 'மகளிர்' },
+        { key: 'GENERAL', label: 'பொது' }
+    ];
     showPreviewPopup: boolean = false;
+showMembersPopup = false;    memberSections: { title: string; rows: { society_name: string; sc: string; women: string; general: string }[] }[] = [];
 
 
     constructor(private userService: UserService, private router: Router) { }
@@ -86,13 +91,6 @@ export class Form8 implements OnInit {
 
             const data = res.data;
 
-            /* ===== F3 – Stopped societies ===== */
-
-            const stopped = data.stopped_elections || {};
-            const rule52_18 = stopped.RULE_52_18 || [];
-            const rule52A_6 = stopped.RULE_52A_6 || [];
-
-            this.stoppedSocieties = [...rule52_18, ...rule52A_6];
 
             /* ===== F4 – NO ISSUES societies ===== */
             /* ===== F4 – NO ISSUES societies ===== */
@@ -114,9 +112,26 @@ export class Form8 implements OnInit {
                             category_type: x.category_type
                         })) || [];
 
+                    const savedVotes = this.editableData?.candidateVotes?.filter(
+                        (v: any) => v.form7_society_id === s.form7_society_id
+                    ) || [];
+
+                    const membersWithVotes = Object.fromEntries(
+                        Object.entries(s.members ?? {}).map(([cat, list]: any) => [
+                            cat,
+                            list.map((m: any) => ({
+                                ...m,
+                                votes_obtained:
+                                    savedVotes.find((v: any) => v.form5_member_id === m.form5_member_id)?.votes_obtained ?? 0
+                            }))
+                        ])
+                    );
+
                     return {
 
                         ...s,
+
+                        members: membersWithVotes,
 
                         rural: {
                             sc_st: s.rural?.sc_st || 0,
@@ -216,6 +231,19 @@ export class Form8 implements OnInit {
     /* ================= SAVE WINNERS (Popup Submit) ================= */
     submitPreview() {
 
+        const totalEntered = this.memberCategories
+            .flatMap(cat => this.getMembers(cat.key))
+            .reduce((sum: number, m: any) => sum + (Number(m.votes_obtained) || 0), 0);
+
+        const validVotes = Number(this.selectedSociety.valid_votes) || 0;
+
+        if (totalEntered !== validVotes) {
+            alert(
+                `பெற்ற வாக்குகளின் கூடுதல் (${totalEntered}) செல்லுபடியான வாக்குகளின் எண்ணிக்கைக்கு (${validVotes}) சமமாக இல்லை`
+            );
+            return;
+        }
+
         // const selected = this.selectedSociety.selectedMembers;
 
         // if (!selected || selected.length === 0) {
@@ -249,10 +277,45 @@ export class Form8 implements OnInit {
         //     return;
         // }
 
-        // Mark as saved locally
-        this.selectedSociety.submitted = true;
-        this.closePreview();
-        alert('வெற்றிகரமாக சேமிக்கப்பட்டது');
+        const soc = this.selectedSociety;
+
+        const payload = {
+            societies: [{
+                form7_society_id: soc.form7_society_id,
+                candidates: this.buildCandidates(soc)
+            }]
+        };
+
+        this.userService.saveForm8Checkbox(payload).subscribe({
+            next: (res: any) => {
+                const list = Array.isArray(res) ? res : (res?.data ?? []);
+                const result = list[0];
+
+                soc.selectedMembers = (['SC_ST', 'WOMEN', 'GENERAL'] as const).flatMap(cat =>
+                    (result?.winners?.[cat] ?? []).map((w: any) => ({
+                        form5_member_id: w.form5_member_id,
+                        category_type: cat
+                    }))
+                );
+
+                soc.submitted = true;
+                this.closePreview();
+                alert('வெற்றிகரமாக சேமிக்கப்பட்டது');
+            },
+            error: (err: any) => {
+                alert(err?.error?.message || 'சேமிக்க முடியவில்லை');
+            }
+        });
+    }
+
+    buildCandidates(soc: any) {
+        return (['SC_ST', 'WOMEN', 'GENERAL'] as const).flatMap(cat =>
+            (soc.members?.[cat] ?? []).map((m: any) => ({
+                form5_member_id: m.form5_member_id,
+                category_type: cat,
+                votes_obtained: Number(m.votes_obtained) || 0
+            }))
+        );
     }
 
     /* ================= FINAL SUBMIT (Form8) ================= */
@@ -276,27 +339,7 @@ export class Form8 implements OnInit {
 
                 },
 
-                winners: {
-
-                    SC_ST: s.selectedMembers
-                        .filter((m: any) => m.category_type === 'SC_ST')
-                        .map((m: any) => ({
-                            form5_member_id: m.form5_member_id
-                        })),
-
-                    WOMEN: s.selectedMembers
-                        .filter((m: any) => m.category_type === 'WOMEN')
-                        .map((m: any) => ({
-                            form5_member_id: m.form5_member_id
-                        })),
-
-                    GENERAL: s.selectedMembers
-                        .filter((m: any) => m.category_type === 'GENERAL')
-                        .map((m: any) => ({
-                            form5_member_id: m.form5_member_id
-                        }))
-
-                }
+                candidates: this.buildCandidates(s)
 
             }))
 

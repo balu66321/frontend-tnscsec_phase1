@@ -1,0 +1,223 @@
+<div class="ep-page">
+
+    <div class="ep-topbar">
+        <a class="back-link" [routerLink]="['/layout/totalforms']">← Back</a>
+        <h2>தேர்தல் திட்ட அறிவிப்பு (Election Programme)</h2>
+    </div>
+
+    <div class="ep-readonly-notice" *ngIf="!isAdmin">
+        இந்தப் பக்கம் பார்வைக்கு மட்டும் — நிர்வாகி (admin) மட்டுமே தரவைத் திருத்த முடியும்.
+    </div>
+
+    <!-- ================================================= -->
+    <!-- PAGE 1 — Annexure I: 5 Phases of Election -->
+    <!-- ================================================= -->
+
+    <section class="ep-section">
+        <div class="ep-section-header">
+            <div class="ep-page-no">Page 1</div>
+            <div class="ep-section-actions" *ngIf="isAdmin">
+                <button type="button" class="ep-edit-btn" *ngIf="!isUnlocked('page1')"
+                    (click)="startEdit('page1')">Edit</button>
+                <button type="button" class="ep-submit-btn" *ngIf="isUnlocked('page1')"
+                    (click)="submitSection('page1')">Submit</button>
+            </div>
+        </div>
+
+        <h3 class="ep-title">TAMILNADU STATE COOPERATIVE SOCIETIES ELECTION COMMISSION, CHENNAI – 18.</h3>
+        <h4 class="ep-subtitle">Annexure – I</h4>
+        <h4 class="ep-subtitle">5 Phases of Election</h4>
+
+        <fieldset class="ep-fieldset" [disabled]="!isUnlocked('page1')">
+            <div class="ep-phase" *ngFor="let p of phases">
+                <div class="ep-phase-label">{{ p.label }} :</div>
+                <div class="ep-phase-body">
+                    <div class="ep-phase-desc">{{ p.description }}</div>
+                    <div class="ep-phase-count">
+                        <input type="number" min="0" [(ngModel)]="p.count" placeholder="Societies count">
+                        <span>Societies</span>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </section>
+
+    <!-- ================================================= -->
+    <!-- PAGE 2 — Annexure I(a): societies per phase, per officer -->
+    <!-- ================================================= -->
+
+    <section class="ep-section">
+        <div class="ep-section-header">
+            <div class="ep-page-no">Page 2</div>
+            <div class="ep-section-actions" *ngIf="isAdmin">
+                <button type="button" class="ep-edit-btn" *ngIf="!isUnlocked('page2')"
+                    (click)="startEdit('page2')">Edit</button>
+                <button type="button" class="ep-submit-btn" *ngIf="isUnlocked('page2')"
+                    (click)="submitSection('page2')">Submit</button>
+            </div>
+        </div>
+
+        <h3 class="ep-title">TAMILNADU STATE COOPERATIVE SOCIETIES ELECTION COMMISSION, CHENNAI - 18.</h3>
+        <h4 class="ep-subtitle">Election Programme</h4>
+        <h4 class="ep-subtitle">Annexure - I (a)</h4>
+
+        <fieldset class="ep-fieldset" [disabled]="!isUnlocked('page2')">
+            <div class="ep-table-scroll">
+                <table class="ep-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="col-small">S. No</th>
+                            <th rowspan="2" class="col-wide">Name of the State Election Officer</th>
+                            <th colspan="6">No. of Cooperative Societies for which Election are to be conducted</th>
+                        </tr>
+                        <tr>
+                            <th>In I Phase</th>
+                            <th>In II Phase</th>
+                            <th>In IIIrd Phase</th>
+                            <th>In IVth Phase</th>
+                            <th>Vth Phase</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of annexure1aOfficers; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td class="text-left">{{ row.name }}</td>
+                            <td *ngFor="let v of row.values; let ci = index">
+                                <input type="number" min="0" [(ngModel)]="row.values[ci]">
+                            </td>
+                            <td class="ep-total">{{ rowTotal(row) }}</td>
+                        </tr>
+                        <tr class="ep-total-row">
+                            <td colspan="2">Total</td>
+                            <td *ngFor="let c of phaseColumnIndexes">{{ columnTotal(annexure1aOfficers, c) }}</td>
+                            <td>{{ grandTotal(annexure1aOfficers) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </section>
+
+    <!-- ================================================= -->
+    <!-- PAGE 3 — Annexure II: Phase-I societies, per stage, per officer -->
+    <!-- ================================================= -->
+
+    <section class="ep-section">
+        <div class="ep-section-header">
+            <div class="ep-page-no">Page 3</div>
+            <div class="ep-section-actions" *ngIf="isAdmin">
+                <button type="button" class="ep-edit-btn" *ngIf="!isUnlocked('page3')"
+                    (click)="startEdit('page3')">Edit</button>
+                <button type="button" class="ep-submit-btn" *ngIf="isUnlocked('page3')"
+                    (click)="submitSection('page3')">Submit</button>
+            </div>
+        </div>
+
+        <h3 class="ep-title">TAMILNADU STATE COOPERATIVE SOCIETIES ELECTION COMMISSION, CHENNAI - 18.</h3>
+        <h4 class="ep-subtitle">Election Programme - I Phase</h4>
+        <h4 class="ep-subtitle">Annexure – II</h4>
+
+        <fieldset class="ep-fieldset" [disabled]="!isUnlocked('page3')">
+            <div class="ep-table-scroll">
+                <table class="ep-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="col-small">S. No</th>
+                            <th rowspan="2" class="col-wide">Name of the State Election Officer</th>
+                            <th colspan="5">No. of Cooperative Societies for which Election are to be conducted</th>
+                        </tr>
+                        <tr>
+                            <th>In I Stage</th>
+                            <th>In II Stage</th>
+                            <th>In IIIrd Stage</th>
+                            <th>In IVth Stage</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of annexure2Officers; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td class="text-left">{{ row.name }}</td>
+                            <td *ngFor="let v of row.values; let ci = index">
+                                <input type="number" min="0" [(ngModel)]="row.values[ci]">
+                            </td>
+                            <td class="ep-total">{{ rowTotal(row) }}</td>
+                        </tr>
+                        <tr class="ep-total-row">
+                            <td colspan="2">Total</td>
+                            <td *ngFor="let c of stageColumnIndexes">{{ columnTotal(annexure2Officers, c) }}</td>
+                            <td>{{ grandTotal(annexure2Officers) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </section>
+
+    <!-- ================================================= -->
+    <!-- PAGES 4-6 — Annexure II(a): election schedule dates -->
+    <!-- One continuous section: single heading, single Edit/Submit -->
+    <!-- ================================================= -->
+
+    <section class="ep-section">
+        <div class="ep-section-header">
+            <div class="ep-page-no">Page 4-6</div>
+            <div class="ep-section-actions" *ngIf="isAdmin">
+                <button type="button" class="ep-edit-btn" *ngIf="!isUnlocked('schedule')"
+                    (click)="startEdit('schedule')">Edit</button>
+                <button type="button" class="ep-submit-btn" *ngIf="isUnlocked('schedule')"
+                    (click)="submitSection('schedule')">Submit</button>
+            </div>
+        </div>
+
+        <h3 class="ep-title">TAMIL NADU STATE COOPERATIVE SOCIETIES ELECTION COMMISSION</h3>
+        <h4 class="ep-subtitle">ANNEXURE – II (a)</h4>
+        <h4 class="ep-subtitle">Communication of the Election Programme, As per Commission's Order — Election to
+            Cooperative Societies, Phase-I</h4>
+
+        <fieldset class="ep-fieldset" [disabled]="!isUnlocked('schedule')">
+            <div class="ep-table-scroll">
+                <table class="ep-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="col-small">S. No</th>
+                            <th rowspan="2" class="col-wide">Contents</th>
+                            <th colspan="3">Stage-I</th>
+                            <th colspan="3">Stage-II</th>
+                            <th colspan="3">Stage-III</th>
+                            <th colspan="3">Stage-IV</th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>From Time</th>
+
+                            <th>To Time</th>
+                            <th>Date</th>
+                            <th>From Time</th>
+                            <th>To Time</th>
+                            <th>Date</th>
+                            <th>From Time</th>
+                            <th>To Time</th>
+                            <th>Date</th>
+                            <th>From Time</th>
+                            <th>To Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of scheduleRows">
+                            <td>{{ row.no }}</td>
+                            <td class="text-left">{{ row.content }}</td>
+                            <ng-container *ngFor="let stage of row.stages">
+                                <td><input type="date" [(ngModel)]="stage.date"></td>
+                                <td><input type="time" [(ngModel)]="stage.fromTime"></td>
+                                <td><input type="time" [(ngModel)]="stage.toTime"></td>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </section>
+
+</div>

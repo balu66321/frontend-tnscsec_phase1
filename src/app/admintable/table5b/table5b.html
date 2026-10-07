@@ -22,13 +22,159 @@
 
     </div>
 
+    <button class="action-btn view-toggle-btn" (click)="toggleViewMode()">
+        {{ viewMode === 'full' ? '📊 சுருக்க அட்டவணை (Abstract)' : '📋 முழு அட்டவணை (Full List)' }}
+    </button>
+
     <button class="export-btn" (click)="downloadPdf()">
-        📄 Download PDF
+        📄 {{ viewMode === 'abstract' ? 'Download Abstract PDF' : 'Download PDF' }}
     </button>
 
 </div>
 
-<div class="formt5b-container">
+<!-- ABSTRACT (DISTRICT/ZONE-WISE SUMMARY) TABLE -->
+<div class="formt5b-container" *ngIf="viewMode === 'abstract'">
+    <div class="table-scroll-wrapper">
+        <table class="report-table abstract-table" id="abstractTable">
+
+            <thead>
+
+                <tr class="top-header">
+                    <th colspan="23">
+                        மாவட்டம் / சரகம் வாரியான சுருக்க எண்ணிக்கை விவரம்
+                    </th>
+                </tr>
+
+                <tr class="top-sub-header">
+                    <th colspan="23">
+                        துறை -- {{ department_name }}
+                    </th>
+                </tr>
+
+                <tr class="group-header">
+                    <th rowspan="2">வ. எண்</th>
+                    <th rowspan="2">மாவட்டம்</th>
+                    <th rowspan="2">சரகம்</th>
+
+                    <th colspan="5">
+                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
+                    </th>
+
+                    <th colspan="5">
+                        வேட்புமனு பரிசீலனையின் போது தள்ளுபடி செய்யப்பட்ட வேட்பு மனுக்களின் எண்ணிக்கை
+                    </th>
+
+                    <th colspan="5">
+                        தகுதிபெற்ற வேட்பு மனுக்கள் பட்டியல்படி வேட்பு மனுக்களின் எண்ணிக்கை
+                    </th>
+
+                    <th colspan="5">
+                        வேட்பு மனு தாக்கல் நிறுத்தப்பட்ட
+                    </th>
+                </tr>
+
+                <tr class="sub-header">
+                    <th>சங்கங்கள்</th>
+                    <th>ப.இ./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+
+                    <th>சங்கங்கள்</th>
+                    <th>ப.இ./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+
+                    <th>சங்கங்கள்</th>
+                    <th>ப.இ./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+
+                    <th>சங்கங்கள்</th>
+                    <th>ப.இ./ப.கு</th>
+                    <th>மகளிர்</th>
+                    <th>பொது</th>
+                    <th>மொத்தம்</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr *ngIf="abstractRows.length === 0">
+                    <td colspan="23" class="empty-table-message">
+                        தயவுசெய்து முதலில் படிவம் 5b-ஐ பூர்த்தி செய்யவும்.
+                    </td>
+                </tr>
+
+                <tr *ngFor="let a of abstractRows; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td class="text-left">{{ a.district_name }}</td>
+                    <td class="text-left">{{ a.zone_name }}</td>
+
+                    <td>{{ a.filedCount }}</td>
+                    <td>{{ a.decSc }}</td>
+                    <td>{{ a.decWomen }}</td>
+                    <td>{{ a.decGeneral }}</td>
+                    <td>{{ a.decTotal }}</td>
+
+                    <td>{{ a.rejCount }}</td>
+                    <td>{{ a.rejSc }}</td>
+                    <td>{{ a.rejWomen }}</td>
+                    <td>{{ a.rejGeneral }}</td>
+                    <td>{{ a.rejTotal }}</td>
+
+                    <td>{{ a.remCount }}</td>
+                    <td>{{ a.remSc }}</td>
+                    <td>{{ a.remWomen }}</td>
+                    <td>{{ a.remGeneral }}</td>
+                    <td>{{ a.remTotal }}</td>
+
+                    <td>{{ a.stoppedCount }}</td>
+                    <td>{{ a.stopDecSc }}</td>
+                    <td>{{ a.stopDecWomen }}</td>
+                    <td>{{ a.stopDecGeneral }}</td>
+                    <td>{{ a.stopDecTotal }}</td>
+                </tr>
+
+                <!-- GRAND TOTAL -->
+                <tr *ngIf="abstractRows.length > 0" class="grand-total-row">
+                    <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+
+                    <td><strong>{{ grandTotal.filedCount }}</strong></td>
+                    <td><strong>{{ grandTotal.decSc }}</strong></td>
+                    <td><strong>{{ grandTotal.decWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.decGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.decTotal }}</strong></td>
+
+                    <td><strong>{{ grandTotal.rejCount }}</strong></td>
+                    <td><strong>{{ grandTotal.rejSc }}</strong></td>
+                    <td><strong>{{ grandTotal.rejWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.rejGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.rejTotal }}</strong></td>
+
+                    <td><strong>{{ grandTotal.remCount }}</strong></td>
+                    <td><strong>{{ grandTotal.remSc }}</strong></td>
+                    <td><strong>{{ grandTotal.remWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.remGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.remTotal }}</strong></td>
+
+                    <td><strong>{{ grandTotal.stoppedCount }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecSc }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecTotal }}</strong></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="formt5b-container" *ngIf="viewMode === 'full'">
     <div class="table-scroll-wrapper">
         <table class="report-table" id="reportTable">
 
@@ -36,58 +182,85 @@
 
                 <!-- Title -->
                 <tr class="top-header">
-                    <th colspan="11">
-                        வேட்புமனு பரிசீலனை மற்றும் செல்லத்தக்க வேட்புமனுக்கள் பட்டியல்
+                    <th colspan="24">
+                        வேட்புமனு பரிசீலனை மற்றும் தகுதிபெற்ற வேட்புமனுக்கள் பட்டியல் பற்றிய விவரங்கள்
                     </th>
                 </tr>
 
                 <!-- Department -->
                 <tr class="top-sub-header">
-                    <th colspan="11">
+                    <th colspan="24">
                         துறை -- {{ department_name }}
                     </th>
                 </tr>
 
                 <!-- Group Header -->
                 <tr class="group-header">
-                    <th rowspan="2">வ.எண்</th>
-                    <th rowspan="2">மாவட்டம்</th>
-                    <th rowspan="2">சரகம்</th>
+                    <th rowspan="3">வ. எண்</th>
+                    <th rowspan="3">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+                    <th rowspan="3">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
 
-                    <!-- Declared -->
-                    <th colspan="4">
-                        தகுதி பெற்ற சங்கங்கள் எண்ணிக்கை
+                    <th colspan="5">
+                        வேட்புமனு தாக்கல் செய்யப்பட்ட சங்கங்கள் மற்றும் உறுப்பினர்களின் எண்ணிக்கை
                     </th>
 
-                    <!-- Remaining -->
-                    <th colspan="3">
-                        தள்ளுபடி / நிறுத்தல் பின்னர் எண்ணிக்கை
+                    <th colspan="5">
+                        வேட்புமனு பரிசீலனையின் போது தள்ளுபடி செய்யப்பட்ட வேட்பு மனுக்களின் எண்ணிக்கை
                     </th>
 
-                    <!-- Stopped -->
-                    <th colspan="1">
-                        தேர்தல் நிறுத்தப்பட்ட சங்கங்கள்
+                    <th colspan="5">
+                        தகுதிபெற்ற வேட்பு மனுக்கள் பட்டியல்படி வேட்பு மனுக்களின் எண்ணிக்கை
                     </th>
+
+                    <th colspan="6">
+                        வேட்பு மனு தாக்கல் நிறுத்தப்பட்ட
+                    </th>
+                </tr>
+
+                <!-- Mid Header -->
+                <tr class="mid-header">
+
+                    <th rowspan="2">சங்கங்கள்</th>
+                    <th rowspan="2">ப.இ./ப.கு</th>
+                    <th rowspan="2">மகளிர்</th>
+                    <th rowspan="2">பொது</th>
+                    <th rowspan="2">மொத்தம்</th>
+
+                    <th rowspan="2">சங்கங்கள்</th>
+                    <th rowspan="2">ப.இ./ப.கு</th>
+                    <th rowspan="2">மகளிர்</th>
+                    <th rowspan="2">பொது</th>
+                    <th rowspan="2">மொத்தம்</th>
+
+                    <th rowspan="2">சங்கங்கள்</th>
+                    <th rowspan="2">ப.இ./ப.கு</th>
+                    <th rowspan="2">மகளிர்</th>
+                    <th rowspan="2">பொது</th>
+                    <th rowspan="2">மொத்தம்</th>
+
+                    <th colspan="5">சங்கங்கள்</th>
+                    <th rowspan="2">காரணங்கள்</th>
                 </tr>
 
                 <!-- Sub Header -->
                 <tr class="sub-header">
-
-                    <!-- Declared -->
-                    <!-- <th>சங்கங்கள்</th> -->
-                    <th>சங்கத்தின் பெயர்</th>
+                    <th>சங்கங்கள்</th>
                     <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
+                    <th>மகளிர்</th>
                     <th>பொது</th>
+                    <th>மொத்தம்</th>
+                </tr>
 
-                    <!-- Remaining -->
-                    <th>ப.இ./ப.கு</th>
-                    <th>பெண்கள்</th>
-                    <th>பொது</th>
-
-                    <!-- Stopped -->
-                    <th>சங்கத்தின் பெயர்</th>
-
+                <!-- Column Number Row -->
+                <tr class="col-number-row">
+                    <th class="col-number-cell">1</th>
+                    <th class="col-number-cell">2</th>
+                    <th class="col-number-cell">3</th>
+                    <th class="col-number-cell" colspan="5">4</th>
+                    <th class="col-number-cell" colspan="5">5</th>
+                    <th class="col-number-cell" colspan="5">6</th>
+                    <th class="col-number-cell" colspan="5">7</th>
+                    <th class="col-number-cell">8</th>
                 </tr>
 
             </thead>
@@ -95,32 +268,76 @@
             <tbody>
 
                 <tr *ngIf="tableRows.length === 0">
-                    <td colspan="13" class="empty-table-message">
+                    <td colspan="24" class="empty-table-message">
                         தயவுசெய்து முதலில் படிவம் 5b-ஐ பூர்த்தி செய்யவும்.
                     </td>
                 </tr>
 
                 <tr *ngFor="let row of tableRows; let i = index">
 
-                    <td>{{ i + 1 }}</td>
+                    <td>{{ row.districtSerial }}</td>
                     <td>{{ row.district_name }}</td>
                     <td>{{ row.zone_name }}</td>
 
-                    <!-- Declared -->
-                    <!-- <td>{{ row.dec_total }}</td> -->
-                    <td>{{ row.society_name }}</td>
+                    <!-- Group 3: Filed societies & members -->
+                    <td class="wrap-col text-left">{{ row.society_name }}</td>
                     <td>{{ row.dec_sc }}</td>
                     <td>{{ row.dec_women }}</td>
                     <td>{{ row.dec_general }}</td>
+                    <td>{{ row.dec_total }}</td>
 
-                    <!-- Remaining -->
+                    <!-- Group 4: Rejected during scrutiny -->
+                    <td class="wrap-col text-left">{{ row.rejected_society_name }}</td>
+                    <td>{{ row.rej_sc }}</td>
+                    <td>{{ row.rej_women }}</td>
+                    <td>{{ row.rej_general }}</td>
+                    <td>{{ row.rej_total }}</td>
+
+                    <!-- Group 5: Qualified nominations -->
+                    <td class="wrap-col text-left">{{ row.qualified_society_name }}</td>
                     <td>{{ row.rem_sc }}</td>
                     <td>{{ row.rem_women }}</td>
                     <td>{{ row.rem_general }}</td>
+                    <td>{{ row.rem_total }}</td>
 
-                    <!-- Stopped -->
-                    <td>{{ row.stopped_society_name }}</td>
+                    <!-- Group 6/7: Election stopped -->
+                    <td class="wrap-col text-left">{{ row.stopped_society_name }}</td>
+                    <td>{{ row.stop_dec_sc }}</td>
+                    <td>{{ row.stop_dec_women }}</td>
+                    <td>{{ row.stop_dec_general }}</td>
+                    <td>{{ row.stop_dec_total }}</td>
+                    <td class="wrap-col text-left">{{ row.stop_reason_display }}</td>
 
+                </tr>
+
+                <!-- GRAND TOTAL -->
+                <tr *ngIf="tableRows.length > 0" class="grand-total-row">
+                    <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+
+                    <td></td>
+                    <td><strong>{{ grandTotal.decSc }}</strong></td>
+                    <td><strong>{{ grandTotal.decWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.decGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.decTotal }}</strong></td>
+
+                    <td></td>
+                    <td><strong>{{ grandTotal.rejSc }}</strong></td>
+                    <td><strong>{{ grandTotal.rejWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.rejGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.rejTotal }}</strong></td>
+
+                    <td></td>
+                    <td><strong>{{ grandTotal.remSc }}</strong></td>
+                    <td><strong>{{ grandTotal.remWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.remGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.remTotal }}</strong></td>
+
+                    <td></td>
+                    <td><strong>{{ grandTotal.stopDecSc }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecWomen }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecGeneral }}</strong></td>
+                    <td><strong>{{ grandTotal.stopDecTotal }}</strong></td>
+                    <td></td>
                 </tr>
             </tbody>
 

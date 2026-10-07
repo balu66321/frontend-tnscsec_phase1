@@ -540,3 +540,25 @@
   background: #009aa5;
   border-radius: 10px;
 }
+
+/* --------------------------------------------------
+   PER-SOCIETY COUNT ROW (voter list prepared counts)
+-------------------------------------------------- */
+.count-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.count-item-name {
+  flex: 1 1 auto;
+}
+
+.count-input {
+  flex: 0 0 100px;
+  width: 100px;
+  margin-bottom: 0;
+  height: 36px;
+  text-align: center;
+}

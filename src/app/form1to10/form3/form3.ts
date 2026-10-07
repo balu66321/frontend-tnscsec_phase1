@@ -26,17 +26,35 @@ export class Form3 implements OnInit {
   f3SocietyList: {
     society_id: number;
     society_name: string;
+    voter_list_prepared_count: number | null;
   }[] = [];
 
-  // F4
-  voterCounts: number[] = [];
+  // Societies that did NOT give a member list — officer prepared the
+  // draft voter list himself for these (read-only, informational).
+  f3NonMemberSocietyList: {
+    society_id: number;
+    society_name: string;
+    voter_list_prepared_count: number | null;
+  }[] = [];
 
-  // F5
-  f5Answers: ('YES' | 'NO')[] = [];
+  // society_id -> voter_list_prepared_count, from Form2 (covers both groups)
+  private voterListCountMap = new Map<number, number | null>();
+
+  // F5 & F6 need to cover BOTH member-list and non-member-list societies —
+  // this is the union of f3SocietyList + f3NonMemberSocietyList.
+  allSocietiesList: {
+    society_id: number;
+    society_name: string;
+    voter_list_prepared_count: number | null;
+  }[] = [];
+
+  // F5 — keyed by society_id so it stays correct across the merged list
+  // (index-based arrays broke once societies could come from two sources)
+  f5AnswersMap: Record<number, 'YES' | 'NO'> = {};
 
   // F6
-  removedCounts: number[] = [];
-  remainingCounts: number[] = [];
+  removedCountsMap: Record<number, number> = {};
+  remainingCountsMap: Record<number, number> = {};
 
 
   memberCounts: number[] = [];   // From API (readonly)
@@ -51,6 +69,60 @@ export class Form3 implements OnInit {
     this.zone_name = localStorage.getItem('zone_name') || '';
 
     this.loadEditableForm3();
+    this.loadNonMemberSocieties();
+  }
+
+  // Independent of Form3's own edit/add state — always pull the
+  // non-selected group (and the counts for BOTH groups) straight
+  // from Form2's editable data.
+  loadNonMemberSocieties(): void {
+    this.userService.getEditableForm2().subscribe({
+      next: (res: any) => {
+        const selected = res?.data?.selected_soc || [];
+        const nonSelected = res?.data?.non_selected_soc || [];
+
+        [...selected, ...nonSelected].forEach((s: any) => {
+          this.voterListCountMap.set(s.society_id, s.voter_list_prepared_count ?? null);
+        });
+
+        this.f3NonMemberSocietyList = nonSelected.map((s: any) => ({
+          society_id: s.society_id,
+          society_name: s.society_name,
+          voter_list_prepared_count: s.voter_list_prepared_count ?? null
+        }));
+
+        this.applyVoterListCounts();
+      },
+      error: () => {
+        this.f3NonMemberSocietyList = [];
+      }
+    });
+  }
+
+  // Backfills voter_list_prepared_count onto f3SocietyList — called after
+  // either f3SocietyList or voterListCountMap becomes available, whichever
+  // async call (loadEditableForm3/loadF3 vs loadNonMemberSocieties) lands last.
+  private applyVoterListCounts(): void {
+    this.f3SocietyList = this.f3SocietyList.map(soc => ({
+      ...soc,
+      voter_list_prepared_count:
+        this.voterListCountMap.get(soc.society_id) ?? soc.voter_list_prepared_count ?? null
+    }));
+
+    this.rebuildAllSocieties();
+  }
+
+  // Merges member + non-member societies for F5/F6, filling in defaults
+  // for any society that doesn't have an answer yet — never overwrites
+  // an answer already entered/loaded for one.
+  private rebuildAllSocieties(): void {
+    this.allSocietiesList = [...this.f3SocietyList, ...this.f3NonMemberSocietyList];
+
+    this.allSocietiesList.forEach(soc => {
+      if (!(soc.society_id in this.f5AnswersMap)) this.f5AnswersMap[soc.society_id] = 'NO';
+      if (!(soc.society_id in this.removedCountsMap)) this.removedCountsMap[soc.society_id] = 0;
+      if (!(soc.society_id in this.remainingCountsMap)) this.remainingCountsMap[soc.society_id] = 0;
+    });
   }
 
 
@@ -74,24 +146,17 @@ export class Form3 implements OnInit {
 
         this.f3SocietyList = d.societies.map((s: any) => ({
           society_id: s.society_id,
-          society_name: s.society_name
+          society_name: s.society_name,
+          voter_list_prepared_count: null
         }));
 
-        this.voterCounts = d.societies.map((s: any) =>
-          Number(s.ass_memlist || 0)
-        );
+        d.societies.forEach((s: any) => {
+          this.f5AnswersMap[s.society_id] = (s.ero_claim === 1 || s.ero_claim === 'yes') ? 'YES' : 'NO';
+          this.removedCountsMap[s.society_id] = Number(s.jcount || 0);
+          this.remainingCountsMap[s.society_id] = Number(s.rcount || 0);
+        });
 
-        this.f5Answers = d.societies.map((s: any) =>
-          s.ero_claim === 1 ? 'YES' : 'NO'
-        );
-
-        this.removedCounts = d.societies.map((s: any) =>
-          Number(s.jcount || 0)
-        );
-
-        this.remainingCounts = d.societies.map((s: any) =>
-          Number(s.rcount || 0)
-        );
+        this.applyVoterListCounts();
       },
 
       error: () => {
@@ -116,7 +181,6 @@ export class Form3 implements OnInit {
       if (!res?.success) return;
 
       const societies: any[] = [];
-      const voterCounts: number[] = [];
 
       // API structure: res.data.data
       const form2List = res.data?.data || [];
@@ -132,51 +196,61 @@ export class Form3 implements OnInit {
 
           societies.push({
             society_id: soc.society_id,
-            society_name: soc.society_name
+            society_name: soc.society_name,
+            voter_list_prepared_count: soc.voter_list_prepared_count ?? null
           });
-
-          // API response currently doesn't contain tot_voters
-          voterCounts.push(Number(soc.tot_voters || 0));
 
         });
 
       });
 
       this.f3SocietyList = societies;
-      this.voterCounts = voterCounts;
-
-      this.f5Answers = societies.map(() => 'NO');
-      this.removedCounts = societies.map(() => 0);
-      this.remainingCounts = societies.map(() => 0);
+      this.applyVoterListCounts();
 
       // console.log('Societies:', this.f3SocietyList);
-      // console.log('Voter Counts:', this.voterCounts);
       // console.log('Form2 ID:', this.form2_id);
 
     });
   }
+  // F7's final voter count for one society: when a claim/objection was
+  // raised (F5 = ஆம்), the draft count is adjusted by what F6 recorded —
+  // voter_list_prepared_count - removed + added. Otherwise it's unchanged.
+  finalVoterCount(soc: { society_id: number; voter_list_prepared_count: number | null }): number | string {
+
+    if (soc.voter_list_prepared_count === null || soc.voter_list_prepared_count === undefined) {
+      return '✘';
+    }
+
+    if (this.f5AnswersMap[soc.society_id] === 'YES') {
+      const removed = Number(this.removedCountsMap[soc.society_id] || 0);
+      const added = Number(this.remainingCountsMap[soc.society_id] || 0);
+      return soc.voter_list_prepared_count - removed + added;
+    }
+
+    return soc.voter_list_prepared_count;
+  }
+
   // ================= SUBMIT =================
   onSubmit() {
 
-    // const society_entries = this.f3SocietyList.map((soc, i) => ({
-    //   society_id: soc.society_id,
-    //   society_name: soc.society_name,
-    //   ass_memlist: String(this.voterCounts[i]),
-    //   ero_claim: this.f5Answers[i],
-    //   jcount: String(this.removedCounts[i]),
-    //   rcount: String(this.remainingCounts[i]),
-    //   total: String(this.voterCounts[i])
-    // }));
+    // ass_memlist stays the original draft count; total follows F7's
+    // (possibly claim-adjusted) final count.
+    const society_entries = this.allSocietiesList.map((soc) => {
+      const draftCount = soc.voter_list_prepared_count ?? 0;
+      const finalCount = this.finalVoterCount(soc);
+      const total = typeof finalCount === 'number' ? finalCount : draftCount;
 
-    const society_entries = this.f3SocietyList.map((soc, i) => ({
-      society_id: soc.society_id,
-      society_name: soc.society_name,
-      ass_memlist: String(this.voterCounts[i]),
-      ero_claim: this.f5Answers[i].toLowerCase(), // "yes" or "no"
-      jcount: Number(this.removedCounts[i]),
-      rcount: Number(this.remainingCounts[i]),
-      total: Number(this.voterCounts[i])
-    }));
+      return {
+        society_id: soc.society_id,
+        society_name: soc.society_name,
+        ass_memlist: String(draftCount),
+        ero_claim: (this.f5AnswersMap[soc.society_id] || 'NO').toLowerCase(), // "yes" or "no"
+        jcount: Number(this.removedCountsMap[soc.society_id] || 0),
+        rcount: Number(this.remainingCountsMap[soc.society_id] || 0),
+        total
+      };
+    });
+
     const payload = {
       form2_id: this.form2_id,
       remarks: `Form3 submission for Form2 ID ${this.form2_id}`,

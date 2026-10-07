@@ -18,6 +18,8 @@ interface SelectedSociety {
   women: number;
   general: number;
   tot_voters: number;
+  reason?: string;
+  other_reason_text?: string;
 }
 
 interface MasterzoneSociety {
@@ -32,8 +34,10 @@ interface Form1ApiRow {
   zone_name: string;
   masterzone_count: number;
   remark: string;
+  selected_count: number;
   non_selected_count: number;
   selected_soc: SelectedSociety[];
+  non_selected_soc: SelectedSociety[];
   masterzone_societies: MasterzoneSociety[];
 }
 
@@ -52,9 +56,33 @@ interface TableRow {
 
   isSelected: boolean;
   remark: string;
+  reason: string;
+  otherReasonText: string;
 
   rowSpan?: number;
+  selected_count?: number;
   non_selected_count?: number;
+  districtSerial?: number;
+
+  group_non_selected_count: number;
+}
+
+// One row per district+zone group with everything summed —
+// no per-society names, counts only.
+interface AbstractRow {
+  district_name: string;
+  zone_name: string;
+  masterzone_count: number;
+  selectedCount: number;
+  scStTotal: number;
+  womenTotal: number;
+  generalTotal: number;
+  totVotersTotal: number;
+  nonSelectedCount: number;
+  reasonAddressUnknown: number;
+  reasonDefunct: number;
+  reasonDissolution: number;
+  reasonOther: number;
 }
 
 /* =========================
@@ -72,8 +100,29 @@ export class Table1 implements OnInit {
 
   tableRows: TableRow[] = [];
   originalRows: TableRow[] = [];   // ✅ Keep original data
+  abstractRows: AbstractRow[] = [];
+  viewMode: 'full' | 'abstract' = 'full';
 
   department_name = '';
+
+  // Grand total across every district currently shown (i.e. respects
+  // whatever Department/District filter is applied) — sum of the
+  // per-district abstract totals, shown as the last row of the full table.
+  grandTotal: AbstractRow = {
+    district_name: '',
+    zone_name: '',
+    masterzone_count: 0,
+    selectedCount: 0,
+    scStTotal: 0,
+    womenTotal: 0,
+    generalTotal: 0,
+    totVotersTotal: 0,
+    nonSelectedCount: 0,
+    reasonAddressUnknown: 0,
+    reasonDefunct: 0,
+    reasonDissolution: 0,
+    reasonOther: 0
+  };
 
   // 🔽 Filter values
   // Selected values
@@ -142,7 +191,11 @@ export class Table1 implements OnInit {
 
     this.tableRows = [];
 
+    let districtSerial = 0;
+
     data.forEach((row: any) => {
+
+      districtSerial += 1;
 
       // 🔹 Clean department & district names (important for filter match)
       const cleanDepartment = row.department_name
@@ -188,15 +241,126 @@ export class Table1 implements OnInit {
 
           isSelected: isSelected,
           remark: row.remark,
+          reason: isSelected ? '' : (soc.reason || ''),
+          otherReasonText: isSelected ? '' : (soc.other_reason_text || ''),
 
           rowSpan: index === 0 ? totalRows : undefined,
-          non_selected_count: index === 0 ? row.non_selected_count : undefined
+          selected_count: index === 0 ? row.selected_count : undefined,
+          non_selected_count: index === 0 ? row.non_selected_count : undefined,
+          districtSerial: index === 0 ? districtSerial : undefined,
+
+          group_non_selected_count: row.non_selected_count
         });
 
       });
 
     });
 
+    this.buildAbstractRows();
+
+  }
+
+  /* =========================
+     ABSTRACT (DISTRICT/ZONE-WISE SUMMARY)
+  ========================= */
+  private buildAbstractRows(): void {
+
+    const groups = new Map<string, AbstractRow>();
+
+    this.tableRows.forEach(r => {
+
+      const key = `${r.district_name}||${r.zone_name}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          district_name: r.district_name,
+          zone_name: r.zone_name,
+          masterzone_count: 0,
+          selectedCount: 0,
+          scStTotal: 0,
+          womenTotal: 0,
+          generalTotal: 0,
+          totVotersTotal: 0,
+          nonSelectedCount: 0,
+          reasonAddressUnknown: 0,
+          reasonDefunct: 0,
+          reasonDissolution: 0,
+          reasonOther: 0
+        });
+      }
+
+      const g = groups.get(key)!;
+
+      // masterzone_count / non_selected_count are per form1 RECORD (repeated
+      // on every row belonging to that one record), but a district+zone can
+      // have several form1 records — e.g. different departments each filing
+      // their own notice for the same district — so they must be summed
+      // across records, not overwritten by whichever record's first row is
+      // seen last.
+      if (r.rowSpan) {
+        g.masterzone_count += r.masterzone_count;
+        g.nonSelectedCount += r.non_selected_count ?? 0;
+      }
+
+      if (r.isSelected) {
+        g.selectedCount += 1;
+        g.scStTotal += r.sc_st ?? 0;
+        g.womenTotal += r.women ?? 0;
+        g.generalTotal += r.general ?? 0;
+        g.totVotersTotal += r.tot_voters ?? 0;
+      } else {
+        if (r.reason === 'address_unknown') g.reasonAddressUnknown += 1;
+        else if (r.reason === 'defunct_societies') g.reasonDefunct += 1;
+        else if (r.reason === 'dissolution_notice_issued') g.reasonDissolution += 1;
+        else if (r.reason === 'other') g.reasonOther += 1;
+      }
+
+    });
+
+    this.abstractRows = Array.from(groups.values());
+
+    this.computeGrandTotal();
+  }
+
+  // Sum of every district's abstract totals — reflects whatever
+  // Department/District filter produced the current tableRows.
+  private computeGrandTotal(): void {
+
+    const totals: AbstractRow = {
+      district_name: '',
+      zone_name: '',
+      masterzone_count: 0,
+      selectedCount: 0,
+      scStTotal: 0,
+      womenTotal: 0,
+      generalTotal: 0,
+      totVotersTotal: 0,
+      nonSelectedCount: 0,
+      reasonAddressUnknown: 0,
+      reasonDefunct: 0,
+      reasonDissolution: 0,
+      reasonOther: 0
+    };
+
+    this.abstractRows.forEach(g => {
+      totals.masterzone_count += g.masterzone_count;
+      totals.selectedCount += g.selectedCount;
+      totals.scStTotal += g.scStTotal;
+      totals.womenTotal += g.womenTotal;
+      totals.generalTotal += g.generalTotal;
+      totals.totVotersTotal += g.totVotersTotal;
+      totals.nonSelectedCount += g.nonSelectedCount;
+      totals.reasonAddressUnknown += g.reasonAddressUnknown;
+      totals.reasonDefunct += g.reasonDefunct;
+      totals.reasonDissolution += g.reasonDissolution;
+      totals.reasonOther += g.reasonOther;
+    });
+
+    this.grandTotal = totals;
+  }
+
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'full' ? 'abstract' : 'full';
   }
 
   // exportToExcel(): void {
@@ -232,12 +396,27 @@ export class Table1 implements OnInit {
       d => d.name === this.selectedDepartment
     )?.id;
 
-    if (!departmentId) {
-      alert('Please select a department');
+    const districtId = this.districtList.find(
+      d => d.name === this.selectedDistrict
+    )?.id;
+
+    if (this.viewMode === 'abstract') {
+
+      this.userService.getForm1AbstractPdf(departmentId, districtId).subscribe(
+        (res: Blob) => {
+          saveAs(
+            new Blob([res], { type: 'application/pdf' }),
+            'Form1_Abstract_Report.pdf'
+          );
+        },
+        error => {
+          console.error('Abstract PDF download error:', error);
+        }
+      );
       return;
     }
 
-    this.userService.getForm1Pdf(departmentId).subscribe(
+    this.userService.getForm1Pdf(departmentId, districtId).subscribe(
       (res: Blob) => {
         saveAs(
           new Blob([res], { type: 'application/pdf' }),
@@ -280,6 +459,8 @@ export class Table1 implements OnInit {
       } else {
         this.tableRows = [];
         this.originalRows = [];
+        this.abstractRows = [];
+        this.computeGrandTotal();
       }
 
     });

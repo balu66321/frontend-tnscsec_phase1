@@ -31,42 +31,42 @@
             ⬇ Export Excel
         </button> -->
 
+        <button class="action-btn view-toggle-btn" (click)="toggleViewMode()">
+            {{ viewMode === 'full' ? '📊 சுருக்க அட்டவணை (Abstract)' : '📋 முழு அட்டவணை (Full List)' }}
+        </button>
+
         <button class="export-btn" (click)="downloadPdf()">
-            📄 Download PDF
+            📄 {{ viewMode === 'abstract' ? 'Download Abstract PDF' : 'Download PDF' }}
         </button>
     </div>
 
-    <!-- Scroll wrapper -->
-    <div class="table-scroll-wrapper">
+    <!-- ABSTRACT (DISTRICT/ZONE-WISE SUMMARY) TABLE -->
+    <div class="table-scroll-wrapper" *ngIf="viewMode === 'abstract'">
 
-        <table class="report-table" id="reportTable">
+        <table class="report-table abstract-table" id="abstractTable">
 
             <thead>
 
-                <!-- Title -->
                 <tr class="top-header">
-                    <th colspan="9">
-                        இறுதி வாக்காளர் பட்டியல் வெளியிடப்பட்ட விவரம்
+                    <th colspan="10">
+                        மாவட்டம் / சரகம் வாரியான சுருக்க எண்ணிக்கை விவரம்
                     </th>
                 </tr>
 
-                <!-- Department -->
                 <tr class="top-sub-header">
-                    <th colspan="9">
+                    <th colspan="10">
                         துறை -- {{ department_name }}
                     </th>
                 </tr>
 
-                <!-- Main Header -->
-                <tr>
+                <tr class="main-header">
                     <th rowspan="2">வ.எண்</th>
                     <th rowspan="2">மாவட்டம்</th>
                     <th rowspan="2">சரகம்</th>
-                    <th rowspan="2" class="wrap-col">
-                        சங்கத்தின் பெயர்
-                    </th>
-                    <th rowspan="2">உறுப்பினர் எண்ணிக்கை</th>
-                    <th rowspan="2">கோரிக்கை</th>
+                    <th rowspan="2">சங்கங்களின் எண்ணிக்கை</th>
+                    <th rowspan="2">உறுப்பினர் பட்டியல் தந்த சங்கங்கள்</th>
+                    <th rowspan="2">உறுப்பினர் பட்டியல் தராத சங்கங்கள்</th>
+                    <th rowspan="2">வரைவு வாக்காளர் பட்டியல் உறுப்பினர் எண்ணிக்கை</th>
 
                     <th colspan="2">
                         திருத்தங்கள் செய்யப்பட்ட உறுப்பினர்கள்
@@ -75,7 +75,6 @@
                     <th rowspan="2">இறுதி வாக்காளர்கள்</th>
                 </tr>
 
-                <!-- Sub Header -->
                 <tr class="sub-header">
                     <th>சேர்க்கப்பட்டது</th>
                     <th>நீக்கப்பட்டது</th>
@@ -84,10 +83,137 @@
             </thead>
 
             <tbody>
+                <tr *ngIf="abstractRows.length === 0">
+                    <td colspan="10" class="empty-table-message">
+                        தயவுசெய்து முதலில் படிவம் 3-ஐ பூர்த்தி செய்யவும்.
+                    </td>
+                </tr>
+
+                <tr *ngFor="let a of abstractRows; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td class="text-left">{{ a.district_name }}</td>
+                    <td class="text-left">{{ a.zone_name }}</td>
+                    <td>{{ a.societyCount }}</td>
+                    <td>{{ a.memberSocCount }}</td>
+                    <td>{{ a.nonMemberSocCount }}</td>
+                    <td>{{ a.assMemlistTotal }}</td>
+                    <td>{{ a.rcountTotal }}</td>
+                    <td>{{ a.jcountTotal }}</td>
+                    <td>{{ a.finalVotersTotal }}</td>
+                </tr>
+
+                <!-- GRAND TOTAL -->
+                <tr *ngIf="abstractRows.length > 0" class="grand-total-row">
+                    <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+                    <td><strong>{{ grandTotal.societyCount }}</strong></td>
+                    <td><strong>{{ grandTotal.memberSocCount }}</strong></td>
+                    <td><strong>{{ grandTotal.nonMemberSocCount }}</strong></td>
+                    <td><strong>{{ grandTotal.assMemlistTotal }}</strong></td>
+                    <td><strong>{{ grandTotal.rcountTotal }}</strong></td>
+                    <td><strong>{{ grandTotal.jcountTotal }}</strong></td>
+                    <td><strong>{{ grandTotal.finalVotersTotal }}</strong></td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Scroll wrapper -->
+    <div class="table-scroll-wrapper" *ngIf="viewMode === 'full'">
+
+        <table class="report-table" id="reportTable">
+
+            <thead>
+
+                <!-- Title -->
+                <tr class="top-header">
+                    <th colspan="13">
+                        இறுதி வாக்காளர் பட்டியல் வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட விவரம்
+                    </th>
+                </tr>
+
+                <!-- Department -->
+                <tr class="top-sub-header">
+                    <th colspan="13">
+                        துறை -- {{ department_name }}
+                    </th>
+                </tr>
+
+                <!-- Main Header -->
+                <tr class="main-header">
+                    <th rowspan="2">வ.எண்</th>
+                    <th rowspan="2">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்</th>
+                    <th rowspan="2">மாவட்ட தேர்தல் அலுவலர் சரகம்</th>
+
+                    <th rowspan="2" class="wrap-col">
+                        சங்கம் அளித்த உறுப்பினர் பட்டியல்கள் அடிப்படையில் வரைவு வாக்காளர் பட்டியல் தயாரித்து
+                        வெளியிட்டுள்ள சங்கங்களின் பெயர்
+                        <br>கலம் 6, படிவம் 2-ல் உள்ள சங்கங்கள்
+                    </th>
+
+                    <th rowspan="2">சங்கங்களின் எண்ணிக்கை</th>
+
+                    <th rowspan="2" class="wrap-col">
+                        உறுப்பினர் பட்டியல் அளிக்கப்படாத சங்கங்களில், வாக்காளர் பட்டியல் அலுவலரே வரைவு வாக்காளர்
+                        பட்டியல் தயாரித்து வெளியிட்ட சங்கங்களின் பெயர்கள்
+                        <br>கலம் 7, படிவம் 2-ல் உள்ள சங்கங்கள்
+                    </th>
+
+                    <th rowspan="2">சங்கங்களின் எண்ணிக்கை</th>
+
+                    <th colspan="2">
+                        வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வரைவு வாக்காளர் பட்டியலில் உள்ளபடி உறுப்பினர்களின்
+                        எண்ணிக்கை </th>
+
+                    <th rowspan="2">
+                        வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வரைவு வாக்காளர் பட்டியலுக்கு கோருரிமை அல்லது
+                        மறுப்பு (ஆம் / இல்லை)</th>
+
+                    <th colspan="2">
+                        வாக்காளர் பட்டியல் அலுவலரால் வெளியிடப்பட்ட வரைவு வாக்காளர் பட்டியலில் மேற்கொள்ளப்பட்ட
+                        திருத்தங்கள் </th>
+
+                    <th rowspan="2">
+                        வாக்காளர் பட்டியல் அலுவலரால் இறுதி செய்யப்பட்ட வாக்காளர் பட்டியல் படி சங்க வாரியாக
+                        வாக்காளர்களின் எண்ணிக்கை </th>
+                </tr>
+
+                <!-- Sub Header -->
+                <tr class="sub-header">
+                    <th class="vertical-header">வ.எண் 4-ன் படி</th>
+                    <th class="vertical-header">வ.எண் 5-ன் படி</th>
+                    <th>சேர்க்கப்பட்ட உறுப்பினர்களின் எண்ணிக்கை</th>
+                    <th>நீக்கப்பட்ட உறுப்பினர்களின் எண்ணிக்கை</th>
+                </tr>
+
+                <!-- Column Number Row -->
+                <tr class="col-number-row">
+                    <th class="col-number-cell">1</th>
+                    <th class="col-number-cell">2</th>
+                    <th class="col-number-cell">3</th>
+                    <th class="col-number-cell">4</th>
+                    <th class="col-number-cell">5</th>
+                    <th class="col-number-cell">6</th>
+                    <th class="col-number-cell">7</th>
+                    <th class="col-number-cell" colspan="2">8</th>
+                    <th class="col-number-cell">9</th>
+                    <th class="col-number-cell" colspan="2">10</th>
+                    <th class="col-number-cell">11</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                <tr *ngIf="tableRows.length === 0">
+                    <td colspan="13" class="empty-table-message">
+                        தயவுசெய்து முதலில் படிவம் 3-ஐ பூர்த்தி செய்யவும்.
+                    </td>
+                </tr>
 
                 <tr *ngFor="let r of tableRows; let i = index">
 
-                    <td>{{ i + 1 }}</td>
+                    <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">{{ r.districtSerial }}</td>
 
                     <td *ngIf="r.rowSpan" [attr.rowspan]="r.rowSpan">
                         {{ r.district_name }}
@@ -98,10 +224,19 @@
                     </td>
 
                     <td class="wrap-col text-left">
-                        {{ r.society_name }}
+                        {{ r.member_society_name ?? '-' }}
                     </td>
 
-                    <td>{{ r.ass_memlist ?? '-' }}</td>
+                    <td>{{ r.member_count }}</td>
+
+                    <td class="wrap-col text-left">
+                        {{ r.non_member_society_name ?? '-' }}
+                    </td>
+
+                    <td>{{ r.non_member_count }}</td>
+
+                    <td>{{ r.member_society_name ? (r.ass_memlist ?? '✘') : '' }}</td>
+                    <td>{{ r.non_member_society_name ? (r.ass_memlist ?? '✘') : '' }}</td>
 
                     <td>
                         <span [ngClass]="{
@@ -112,10 +247,25 @@
                         </span>
                     </td>
 
-                    <td>{{ r.jcount }}</td>
                     <td>{{ r.rcount }}</td>
-                    <td>{{ r.tot_voters ?? '-' }}</td>
+                    <td>{{ r.jcount }}</td>
 
+                    <td>{{ r.total ?? '✘' }}</td>
+
+                </tr>
+
+                <!-- GRAND TOTAL -->
+                <tr *ngIf="tableRows.length > 0" class="grand-total-row">
+                    <td colspan="3" class="text-left"><strong>மொத்தம் (அனைத்து மாவட்டங்களும்)</strong></td>
+                    <td></td>
+                    <td><strong>{{ grandTotal.memberSocCount }}</strong></td>
+                    <td></td>
+                    <td><strong>{{ grandTotal.nonMemberSocCount }}</strong></td>
+                    <td colspan="2"><strong>{{ grandTotal.assMemlistTotal }}</strong></td>
+                    <td></td>
+                    <td><strong>{{ grandTotal.rcountTotal }}</strong></td>
+                    <td><strong>{{ grandTotal.jcountTotal }}</strong></td>
+                    <td><strong>{{ grandTotal.finalVotersTotal }}</strong></td>
                 </tr>
 
             </tbody>

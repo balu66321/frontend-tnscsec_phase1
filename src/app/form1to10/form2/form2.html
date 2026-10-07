@@ -9,7 +9,7 @@
     <!-- LEFT COLUMN -->
     <div class="form-column">
 
-      <label class="label">மாவட்ட தேர்தல் அலுவலர்/ மாவட்டம்
+      <label class="label">மாவட்ட தேர்தல் அலுவலர் மாவட்டம்/மண்டலம்
       </label>
       <input type="text" class="input-box" [(ngModel)]="district_name" readonly>
 
@@ -52,44 +52,31 @@
 
 
 
-  <!-- =============== ROW 2 : F5 + F6 =============== -->
-  <div class="upload-container">
-
-
-    <!-- F5 PANEL -->
-    <div class="upload-panel">
-      <h3 class="panel-title">
-        வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல் அளித்த சங்கங்களின்பெயர் </h3>
-
-      <div class="panel-box">
-        <div *ngFor="let item of f5_selectedList" class="panel-item">
-          {{ item.society_name }}
-        </div>
-      </div>
-    </div>
-
-
-
-
-    <!-- F6 PANEL -->
-
-    <div class="upload-panel">
-      <h3 class="panel-title">
-        வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல் அளிக்காத சங்கங்களின் பெயர் </h3>
-
-      <div class="panel-box red-box">
-        <div *ngFor="let item of f6_unselectedList" class="panel-item panel-item-red">
-          {{ item.society_name }}
-        </div>
-      </div>
-    </div>
-
-
-  </div>
-
   <!-- =============== COUNT FIELD =============== -->
   <label class="label">வாக்காளர் பட்டியல் அலுவலருக்கு உறுப்பினர் பட்டியல் அளிக்காத சங்கங்களின் எண்ணிக்கை</label>
   <input type="text" class="input-box" readonly [value]="f6_unselectedList.length">
+
+
+  <!-- =============== EXTRA COUNT FIELD 1 : PREPARED FROM MEMBER LIST =============== -->
+  <label class="label">உறுப்பினர் பட்டியல் அடிப்படையில் வாக்காளர் பட்டியல் அலுவலர் வாக்காளர் பட்டியல் தயாரித்த
+    சங்கங்கள்</label>
+  <div class="society-list-box">
+    <div *ngFor="let item of f5_selectedList" class="society-item count-item">
+      <span class="count-item-name">{{ item.society_name }}</span>
+      <input type="number" min="0" class="input-box count-input" [(ngModel)]="item.voter_list_prepared_count">
+    </div>
+  </div>
+
+
+  <!-- =============== EXTRA COUNT FIELD 2 : PREPARED BY OFFICER HIMSELF =============== -->
+  <label class="label">உறுப்பினர் பட்டியல் தயாரிக்காத சங்கங்களில் வாக்காளர் பட்டியல் அலுவலர் அவராகவே வாக்காளர் பட்டியல்
+    தயாரித்த சங்கங்கள்</label>
+  <div class="society-list-box">
+    <div *ngFor="let item of f6_unselectedList" class="society-item count-item">
+      <span class="count-item-name">{{ item.society_name }}</span>
+      <input type="number" min="0" class="input-box count-input" [(ngModel)]="item.voter_list_prepared_count">
+    </div>
+  </div>
 
 
 

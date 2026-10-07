@@ -28,6 +28,7 @@ export class Form2 implements OnInit {
     society_id: number;
     society_name: string;
     checked: boolean;
+    voter_list_prepared_count: number | null;
   }[] = [];
 
   /* UI preview */
@@ -112,7 +113,8 @@ export class Form2 implements OnInit {
           this.finalCheckboxList.push({
             society_id: s.society_id,
             society_name: s.society_name,
-            checked: true
+            checked: true,
+            voter_list_prepared_count: s.voter_list_prepared_count ?? null
           });
 
         });
@@ -123,7 +125,8 @@ export class Form2 implements OnInit {
           this.finalCheckboxList.push({
             society_id: s.society_id,
             society_name: s.society_name,
-            checked: false
+            checked: false,
+            voter_list_prepared_count: s.voter_list_prepared_count ?? null
           });
 
         });
@@ -159,7 +162,8 @@ export class Form2 implements OnInit {
       this.finalCheckboxList = list.map((x: any) => ({
         society_id: x.society_id,
         society_name: x.society_name,
-        checked: false
+        checked: false,
+        voter_list_prepared_count: null
       }));
 
       this.updateF5F6();
@@ -227,8 +231,14 @@ export class Form2 implements OnInit {
       return;
     }
 
+    const societyCounts = this.finalCheckboxList.map(x => ({
+      society_id: x.society_id,
+      voter_list_prepared_count: x.voter_list_prepared_count
+    }));
+
     const payload = {
       selectedIds,
+      societyCounts,
       remark: 'Updated after verification'
     };
 
@@ -236,7 +246,8 @@ export class Form2 implements OnInit {
     if (this.isEditMode) {
 
       // this.userService.editForm2(this.form2Id!, payload).subscribe((res: any) => {
-      this.userService.editForm2(payload).subscribe((res: any) => {
+      // this.userService.editForm2(payload).subscribe((res: any) => {
+      this.userService.editForm2(this.form2Id!, payload).subscribe((res: any) => {
         if (res.success) {
 
           localStorage.setItem('form2_id', this.form2Id!.toString());

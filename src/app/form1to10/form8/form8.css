@@ -216,6 +216,7 @@
     flex: 1;
 }
 
+
 .member-col h5 {
     text-align: center;
     margin-bottom: 6px;
@@ -496,6 +497,8 @@
     width: 100%;
 }
 
+}
+
 .member-col h5 {
     text-align: center;
     font-size: 22px;
@@ -583,4 +586,50 @@
         width: 100%;
         height: 95vh;
     }
+
+}
+
+.member-col h5 {
+    text-align: center;
+    margin: 0 0 10px;
+}
+
+.vote-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    font-size: 14px;
+}
+
+.vote-table th,
+.vote-table td {
+    border: 1px solid #cbd5e1;
+    padding: 6px 8px;
+}
+
+.vote-table th {
+    background: #e8f1f8;
+    font-weight: 600;
+    text-align: left;
+}
+
+.vote-table th:last-child,
+.vote-table td:last-child {
+    width: 130px;
+    text-align: center;
+}
+
+.vote-input {
+    width: 70px;
+    padding: 4px 6px;
+    border: 1px solid #a8a8a8;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.popup-valid-count {
+    font-size: 15px;
+    font-weight: 600;
+    margin-left: 16px;
+    white-space: nowrap;
 }

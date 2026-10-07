@@ -9,7 +9,7 @@ export class UserService {
 
   // private baseUrl = 'https://jk901cnt-5000.inc1.devtunnels.ms/api';
   // private baseUrl = 'https://72bnm96r-5000.inc1.devtunnels.ms/api';
-  private baseUrl = 'http://localhost:5000/api';
+  private baseUrl = 'http://localhost:4000/api';
 
   // http://localhost:5000/
 
@@ -74,7 +74,10 @@ export class UserService {
 
   getForm1Filtered(departmentId?: number, districtId?: number): Observable<any> {
 
-    let params: any = {};
+    let params: any = {
+      pageNumber: 1,
+      pageSize: 1000
+    };
 
     if (departmentId) params.department_id = departmentId;
     if (districtId) params.district_id = districtId;
@@ -103,11 +106,30 @@ export class UserService {
   // }
 
 
-  getForm1Pdf(department_id: number) {
+  getForm1Pdf(department_id?: number, district_id?: number) {
+    const params: string[] = [];
+    if (department_id) params.push(`department_id=${department_id}`);
+    if (district_id) params.push(`district_id=${district_id}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+
     return this.http.get(
-      `${this.baseUrl}/form1/pdf?department_id=${department_id}`,
+      `${this.baseUrl}/form1/pdf${query}`,
       {
         responseType: 'blob'   // 🔥 VERY IMPORTANT for PDF
+      }
+    );
+  }
+
+  getForm1AbstractPdf(department_id?: number, district_id?: number) {
+    const params: string[] = [];
+    if (department_id) params.push(`department_id=${department_id}`);
+    if (district_id) params.push(`district_id=${district_id}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+
+    return this.http.get(
+      `${this.baseUrl}/form1/abstract-pdf${query}`,
+      {
+        responseType: 'blob'
       }
     );
   }
@@ -157,8 +179,14 @@ export class UserService {
 
 
 
-  getEditableForm1(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/form1/editable`);
+  // getEditableForm1(): Observable<any> {
+  //   return this.http.get<any>(`${this.baseUrl}/form1/editable`);
+  // }
+
+  getEditableForm1(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/form1/editable/${id}`
+    );
   }
 
 
@@ -260,6 +288,18 @@ export class UserService {
     );
   }
 
+  getForm2AbstractPdf(department_id?: number, district_id?: number) {
+    const params: string[] = [];
+    if (department_id) params.push(`department_id=${department_id}`);
+    if (district_id) params.push(`district_id=${district_id}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+
+    return this.http.get(
+      `${this.baseUrl}/form2/abstract-pdf${query}`,
+      { responseType: 'blob' }
+    );
+  }
+
 
 
 
@@ -269,12 +309,12 @@ export class UserService {
     return this.http.get<any>(`${this.baseUrl}/form2/editable`);
   }
 
-  // editForm2(id: number, data: any): Observable<any> {
-  //   return this.http.put<any>(`${this.baseUrl}/form2/edit/${id}`, data);
-  // }
-  editForm2(data: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/form2/edit`, data);
+  editForm2(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/form2/edit/${id}`, data);
   }
+  // editForm2(data: any): Observable<any> {
+  //   return this.http.put<any>(`${this.baseUrl}/form2/edit`, data);
+  // }
 
 
 
@@ -366,6 +406,27 @@ export class UserService {
 
     return this.http.get(
       `${this.baseUrl}/form3/pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+  }
+
+  getForm3AbstractPdf(department_id?: number, district_id?: number) {
+
+    let params: any = {};
+
+    if (department_id) {
+      params.department_id = department_id;
+    }
+
+    if (district_id) {
+      params.district_id = district_id;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form3/abstract-pdf`,
       {
         params,
         responseType: 'blob'
@@ -496,6 +557,27 @@ export class UserService {
     );
   }
 
+  getForm4AbstractPdf(department_id?: number, district_id?: number) {
+
+    let params: any = {};
+
+    if (department_id) {
+      params.department_id = department_id;
+    }
+
+    if (district_id) {
+      params.district_id = district_id;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form4/abstract-pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+  }
+
 
 
 
@@ -586,6 +668,25 @@ export class UserService {
     }
 
     return this.http.get(`${this.baseUrl}/form5/pdf`, {
+      params,
+      responseType: 'blob'
+    });
+
+  }
+
+  getForm5AbstractPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId) {
+      params.department_id = departmentId;
+    }
+
+    if (districtId) {
+      params.district_id = districtId;
+    }
+
+    return this.http.get(`${this.baseUrl}/form5/abstract-pdf`, {
       params,
       responseType: 'blob'
     });
@@ -687,6 +788,27 @@ export class UserService {
 
     return this.http.get(
       `${this.baseUrl}/form5b/pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+  }
+
+  getForm5bAbstractPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId) {
+      params.department_id = departmentId;
+    }
+
+    if (districtId) {
+      params.district_id = districtId;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form5b/abstract-pdf`,
       {
         params,
         responseType: 'blob'
@@ -832,6 +954,50 @@ export class UserService {
     );
 
   }
+
+  getForm6AbstractPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId) {
+      params.department_id = departmentId;
+    }
+
+    if (districtId) {
+      params.district_id = districtId;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form6/abstract-pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+
+  }
+
+  getForm6ListPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId) {
+      params.department_id = departmentId;
+    }
+
+    if (districtId) {
+      params.district_id = districtId;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form6/list-pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+
+  }
   getEditableForm6(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/form6/editable`);
   }
@@ -908,6 +1074,28 @@ export class UserService {
 
     return this.http.get(
       `${this.baseUrl}/form7/pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+
+  }
+
+  getForm7AbstractPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId) {
+      params.department_id = departmentId;
+    }
+
+    if (districtId) {
+      params.district_id = districtId;
+    }
+
+    return this.http.get(
+      `${this.baseUrl}/form7/abstract-pdf`,
       {
         params,
         responseType: 'blob'
@@ -997,6 +1185,44 @@ export class UserService {
 
     return this.http.get(
       `${this.baseUrl}/form8/pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+
+  }
+  getForm8StoppedPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId)
+      params.department_id = departmentId;
+
+    if (districtId)
+      params.district_id = districtId;
+
+    return this.http.get(
+      `${this.baseUrl}/form8/stopped/pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+
+  }
+  getForm8NamesPdf(departmentId?: number, districtId?: number) {
+
+    let params: any = {};
+
+    if (departmentId)
+      params.department_id = departmentId;
+
+    if (districtId)
+      params.district_id = districtId;
+
+    return this.http.get(
+      `${this.baseUrl}/form8/name/pdf`,
       {
         params,
         responseType: 'blob'
@@ -1182,6 +1408,65 @@ export class UserService {
 
   }
 
+  // ==========================================
+  // ELECTION PROGRAMME
+  // ==========================================
+
+  getElectionProgrammes(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/election-programmes`);
+  }
+
+  getElectionProgramme(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/election-programmes/${id}`);
+  }
+
+  createElectionProgramme(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/election-programmes`, payload);
+  }
+
+  updateElectionProgramme(id: number, payload: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/election-programmes/${id}`, payload);
+  }
+
+  // ==========================================
+  // ELECTION SCHEDULE
+  // ==========================================
+
+  generateElectionSchedule(payload: { poll_date: string; title?: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/election-schedule/generate`, payload);
+  }
+
+  regenerateElectionSchedule(id: number, payload: { poll_date: string }): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/election-schedule/${id}/regenerate`, payload);
+  }
+
+  getElectionSchedules(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/election-schedule/`);
+  }
+
+  getElectionSchedule(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/election-schedule/${id}`);
+  }
+
+  updateElectionScheduleStage(stageId: number, payload: any): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/election-schedule/stage/${stageId}`, payload);
+  }
+
+  deactivateElectionSchedule(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/election-schedule/${id}`);
+  }
+
+  getElectionScheduleHolidays(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/election-schedule/holidays/list`);
+  }
+
+  addElectionScheduleHoliday(payload: { holiday_date: string; description: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/election-schedule/holidays`, payload);
+  }
+
+  deleteElectionScheduleHoliday(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/election-schedule/holidays/${id}`);
+  }
 
 
 
